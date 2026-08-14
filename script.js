@@ -67,6 +67,83 @@
 
   startIntro();
 
+  /* ===== БЛОК: HERO STARFIELD (canvas) =====
+     За прямим запитом власника: перший екран виглядав "порожнім" у чорних
+     зонах навколо фото/тексту. Процедурний розсип зірок (розмір/яскравість
+     випадкові, легке мерехтіння) поверх уже наявного .hero__field
+     (небула-градієнти). Vanilla Canvas API, без бібліотек — портовано з
+     ідеї "starfield background" (21st.dev). Статичний кадр (без rAF-циклу)
+     при prefers-reduced-motion або Save-Data, щоб не гріти слабкі/лімітовані
+     пристрої. */
+  (function initStarfield() {
+    var canvas = document.getElementById("heroStars");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var stars = [];
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var width = 0;
+    var height = 0;
+    var animate = !reduceMotion && !saveData;
+
+    function buildStars() {
+      var area = width * height;
+      var count = Math.max(60, Math.min(220, Math.round(area / 6500)));
+      stars = [];
+      for (var i = 0; i < count; i++) {
+        var twinkle = Math.random() < 0.35;
+        stars.push({
+          x: Math.random(),
+          y: Math.random(),
+          r: 0.5 + Math.random() * 1.4,
+          baseAlpha: 0.18 + Math.random() * 0.62,
+          twinkle: twinkle,
+          speed: 0.6 + Math.random() * 1.2,
+          phase: Math.random() * Math.PI * 2,
+          warm: Math.random() < 0.12
+        });
+      }
+    }
+
+    function resize() {
+      var rect = canvas.parentElement.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildStars();
+      draw(0);
+    }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, width, height);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var alpha = s.baseAlpha;
+        if (animate && s.twinkle) {
+          alpha = s.baseAlpha * (0.55 + 0.45 * Math.sin(t * 0.001 * s.speed + s.phase));
+        }
+        ctx.beginPath();
+        ctx.fillStyle = s.warm
+          ? "rgba(255, 116, 38, " + alpha.toFixed(3) + ")"
+          : "rgba(200, 203, 208, " + alpha.toFixed(3) + ")";
+        ctx.arc(s.x * width, s.y * height, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function loop(t) {
+      draw(t);
+      window.requestAnimationFrame(loop);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+    if (animate) {
+      window.requestAnimationFrame(loop);
+    }
+  })();
+
   /* ===== БЛОК: ХЕДЕР — сховати/показати при скролі ===== */
   var header = document.getElementById("siteHeader");
   var lastScroll = window.scrollY;
@@ -224,10 +301,15 @@
     });
   }
 
-  /* ===== БЛОК: ГАЛЕРЕЯ — модалка з клавіатурною навігацією ===== */
+  /* ===== БЛОК: ГАЛЕРЕЯ — модалка з клавіатурною навігацією =====
+     Підпис і лічильник — під фото (.gallery-modal__meta), не оверлей
+     поверх зображення. Відкриття — легкий scale+fade (CSS,
+     .is-open), своп-навігація на тач-екранах (touchstart/touchend). */
   var galleryTiles = Array.prototype.slice.call(document.querySelectorAll(".gallery__tile"));
   var galleryModal = document.getElementById("galleryModal");
   var galleryFrame = document.getElementById("galleryModalFrame");
+  var galleryCaption = document.getElementById("galleryModalCaption");
+  var galleryCount = document.getElementById("galleryModalCount");
   var galleryClose = document.getElementById("galleryModalClose");
   var galleryPrev = document.getElementById("galleryModalPrev");
   var galleryNext = document.getElementById("galleryModalNext");
@@ -239,7 +321,6 @@
     var tile = galleryTiles[index];
     var imageUrl = tile.getAttribute("data-image");
     var caption = tile.getAttribute("data-caption");
-    galleryFrame.className = "gallery-modal__frame";
     galleryFrame.innerHTML = "";
     if (imageUrl) {
       var img = document.createElement("img");
@@ -247,9 +328,8 @@
       img.alt = caption || "";
       galleryFrame.appendChild(img);
     }
-    var captionEl = document.createElement("span");
-    captionEl.textContent = caption || "";
-    galleryFrame.appendChild(captionEl);
+    if (galleryCaption) galleryCaption.textContent = caption || "";
+    if (galleryCount) galleryCount.textContent = (index + 1) + " / " + galleryTiles.length;
   }
 
   function openGallery(index) {
@@ -293,6 +373,19 @@
       if (e.key === "ArrowRight") stepGallery(1);
       if (e.key === "ArrowLeft") stepGallery(-1);
     });
+
+    /* Свайп для мобільних — наступне/попереднє фото, той самий поріг
+       (40px), що типовий для карусельних жестів, без сторонніх бібліотек. */
+    var galleryTouchStartX = null;
+    galleryModal.addEventListener("touchstart", function (e) {
+      galleryTouchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    galleryModal.addEventListener("touchend", function (e) {
+      if (galleryTouchStartX === null) return;
+      var dx = e.changedTouches[0].clientX - galleryTouchStartX;
+      if (Math.abs(dx) > 40) stepGallery(dx < 0 ? 1 : -1);
+      galleryTouchStartX = null;
+    }, { passive: true });
   }
 
   /* ===== БЛОК: VIDEO MODAL =====
@@ -453,13 +546,17 @@
     });
   }
 
-  /* ===== БЛОК: TILT + SPOTLIGHT (DiscographyRail) =====
+  /* ===== БЛОК: TILT + SPOTLIGHT (DiscographyRail + VideoRail) =====
      Тільки desktop hover (pointer: fine, hover: hover) і без
      prefers-reduced-motion — мобільний tap лишається статичним, як і решта
      сайту. Рецепт — прямий запит власника (патерн з 21st.dev, tilt +
-     spotlight), портований на vanilla JS. */
+     spotlight), портований на vanilla JS. Спершу — лише DiscographyRail;
+     за другим запитом ("максимум вау для Галереї/Дискографії/Кліпів")
+     той самий ефект поширено на VideoRail-картки (.video__card), той
+     самий --x/--y контракт, що й .rail__spotlight/.video__card-spotlight
+     (CSS). */
   if (supportsFineHover && !reduceMotion) {
-    var tiltCards = document.querySelectorAll(".rail__card");
+    var tiltCards = document.querySelectorAll(".rail__card, .video__card");
     tiltCards.forEach(function (card) {
       function onMove(e) {
         var rect = card.getBoundingClientRect();
@@ -478,4 +575,22 @@
       card.addEventListener("mouseleave", onLeave);
     });
   }
+
+  /* ===== БЛОК: RAIL EDGE FADE (DiscographyRail) =====
+     Правий край .rail плавно "обрізається" через mask-image (styles.css) —
+     сигнал "прокрутіть далі". Але коли стрічку прокручено до самого кінця,
+     фейд на останній картці мав би виглядати як помилка (ніби її обрізано
+     назавжди) — тому тут вимикаємо маску класом .rail--end, щойно
+     scrollLeft добігає до кінця scrollWidth (з невеликим запасом на
+     похибку округлення subpixel). */
+  var fadeRails = document.querySelectorAll(".rail");
+  fadeRails.forEach(function (rail) {
+    function updateFade() {
+      var atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+      rail.classList.toggle("rail--end", atEnd);
+    }
+    rail.addEventListener("scroll", updateFade, { passive: true });
+    window.addEventListener("resize", updateFade);
+    updateFade();
+  });
 })();

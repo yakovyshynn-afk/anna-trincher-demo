@@ -572,6 +572,20 @@ h3 {
     var(--ink-950);
 }
 
+/* Canvas-starfield — малюється JS поверх .hero__field (той самий z-index,
+   але пізніший у DOM, тому фарбується зверху), під orbit-колом/портретом.
+   Заповнює саме ті "порожні" чорні зони навколо фото/тексту, на які
+   вказав власник — значно щільніший розсип зірок різного розміру/
+   яскравості, ніж 8 фіксованих крапок вище, плюс легке мерехтіння. */
+.hero__stars {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .hero::after {
   content: "";
   position: absolute;
@@ -654,12 +668,21 @@ h3 {
 
   .hero__wordmark {
     margin-inline: auto;
+    /* Wordmark лежить поверх нижньої частини фото — потрібна тінь для
+       контрасту незалежно від того, що саме на фото під текстом.
+       ВАЖЛИВО: тінь тут, на ЗОВНІШНЬОМУ .hero__wordmark, НЕ на img — бо
+       .hero__wordmark-inner (обгортка для translateY reveal-анімації) має
+       overflow:hidden, і якщо filter висить на img всередині неї, сама
+       тінь обрізається рівно по межі цього контейнера — саме той "чітко
+       видимий різкий край" навколо тексту, на який вказав власник, замість
+       м'якого природного згасання. На зовнішньому елементі overflow:hidden
+       немає, тож drop-shadow вільно згасає за формою літер (alpha-силует
+       прозорого PNG), без рамки. */
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
   }
 
   .hero__wordmark img {
-    /* Wordmark лежить поверх нижньої частини фото — потрібна тінь для
-       контрасту незалежно від того, що саме на фото під текстом. */
-    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.7)) drop-shadow(0 1px 6px rgba(0, 0, 0, 0.85));
+    filter: none;
   }
 
   .hero__actions {
@@ -678,6 +701,22 @@ h3 {
     max-height: 58%;
     -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 85%);
     mask-image: linear-gradient(to bottom, black 40%, transparent 85%);
+  }
+
+  /* Мобільна QA: на низьких viewport (~700px і нижче) "Гортайте" сідав
+     впритул під кнопками (обидва — bottom-anchored у межах тієї самої
+     40px-зони). Трохи більше повітря знизу під контент + сам scroll cue
+     нижче й компактніший, щоб рядки завжди читались окремо. */
+  .hero {
+    padding-bottom: 56px;
+  }
+
+  .hero__scrollcue {
+    bottom: 10px;
+  }
+
+  .hero__scrollcue::before {
+    height: 20px;
   }
 }
 
@@ -790,16 +829,34 @@ h3 {
   background: linear-gradient(var(--chrome-300), transparent);
 }
 
-.hero__social {
-  position: absolute;
+/* Завжди на місці під час скролу (position:fixed відносно viewport, не
+   .hero) — за прямою вимогою власника. Легка pill-підкладка з
+   backdrop-filter гарантує контраст іконок незалежно від того, який
+   фон/зображення опиняється під колонкою під час скролу (сайт наскрізно
+   темний — ink-950 — тож ризик низький, але підкладка додає запас на
+   випадок яскравих ділянок фото/постерів). z-index:55 — нижче хедера/
+   мобільного меню (60/70) і модалок (80+), вище звичайного контенту
+   секцій, тому колонка ніколи не ховається під пізнішими блоками, але й
+   не перекриває модалки. pointer-events лишається лише на самих іконках
+   (`a`), контейнер не займає кліки в порожніх проміжках між ними — на
+   практиці це вже так, бо flex-стек не має "порожнього" фону. */
+.social-rail {
+  position: fixed;
+  top: 50%;
   right: var(--gutter);
-  bottom: 20px;
+  transform: translateY(-50%);
+  z-index: 55;
   display: none;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  padding: 14px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(8, 9, 11, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.hero__social a {
+.social-rail a {
   width: 40px;
   height: 40px;
   border: 1px solid var(--line-on-dark);
@@ -812,17 +869,17 @@ h3 {
   transition: border-color var(--duration-fast) var(--ease-ui), transform var(--duration-fast) var(--ease-ui), color var(--duration-fast) var(--ease-ui);
 }
 
-.hero__social a svg {
+.social-rail a svg {
   display: block;
 }
 
-.hero__social a:hover {
+.social-rail a:hover {
   border-color: var(--paper-50);
   transform: translateY(-3px);
 }
 
 @media (min-width: 1024px) {
-  .hero__social {
+  .social-rail {
     display: flex;
   }
 }
@@ -1266,13 +1323,30 @@ h3 {
   border-top: 1px solid var(--line-on-dark-soft);
 }
 
+/* Власник: "кожна картка повинна бути шириною в повний розмір обкладинки,
+   стиснута і обрізана" — прочитано як (а): картка вже сама завширшки точно
+   під обкладинку (aspect-ratio:1/1, cover заповнює 100% ширини), тепер
+   стрічка щільніша (менший gap) і на правому краю плавно "обрізається"
+   через mask-image fade — типовий сигнал "прокрутіть далі" для
+   горизонтальної каруселі, без обрізання жодного пікселя самої обкладинки
+   (object-fit лишається безпечним, бо пропорції картки й обкладинки вже
+   однакові — розділ 14 gaps.md). */
 .rail {
   display: flex;
-  gap: 18px;
+  gap: 10px;
   overflow-x: auto;
   padding-bottom: 12px;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(to right, black 0%, black calc(100% - 56px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 0%, black calc(100% - 56px), transparent 100%);
+}
+
+/* Прокручено до кінця — фейд вимикається (script.js), щоб остання картка
+   не виглядала "обрізаною назавжди". */
+.rail--end {
+  mask-image: none;
+  -webkit-mask-image: none;
 }
 
 .rail::-webkit-scrollbar {
@@ -1292,7 +1366,7 @@ h3 {
 .rail__card {
   scroll-snap-align: start;
   flex: 0 0 auto;
-  width: 210px;
+  width: 188px;
   border-radius: var(--radius-card);
   border: 1px solid var(--line-on-dark);
   position: relative;
@@ -1526,7 +1600,9 @@ h3 {
   overflow: hidden;
   cursor: pointer;
   text-align: left;
-  transition: border-color var(--duration-base) var(--ease-ui), box-shadow var(--duration-base) var(--ease-ui);
+  transition: border-color var(--duration-base) var(--ease-ui), box-shadow var(--duration-base) var(--ease-ui),
+    transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
 }
 
 .video__card:hover,
@@ -1564,7 +1640,27 @@ h3 {
   opacity: 1;
 }
 
-.video__card span {
+/* Spotlight — той самий рецепт, що й .rail__spotlight (DiscographyRail):
+   світлова пляма, що рухається за курсором (--x/--y зі script.js), тільки
+   desktop hover, вимкнено при prefers-reduced-motion. "Вау"-підсилення
+   VideoRail за запитом власника, узгоджене з уже наявним акцентом. */
+.video__card-spotlight {
+  position: absolute;
+  inset: 0 0 auto 0;
+  aspect-ratio: 16 / 9;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(160px circle at var(--x, 50%) var(--y, 50%), rgba(246, 245, 241, 0.3), transparent 68%);
+  transition: opacity var(--duration-fast) var(--ease-ui);
+}
+
+.video__card:hover .video__card-spotlight,
+.video__card:focus-visible .video__card-spotlight {
+  opacity: 1;
+}
+
+.video__card span:not(.video__card-spotlight) {
   position: relative;
   z-index: 1;
   font-weight: 700;
@@ -1647,48 +1743,45 @@ h3 {
   .gallery__grid {
     grid-template-columns: repeat(4, 1fr);
   }
-  .gallery__grid .gallery__tile:nth-child(1) {
-    grid-column: span 2;
-    grid-row: span 2;
-  }
 }
 
+/* Картка — нормальний потік (фото блоком зверху, підпис ПІД ним як
+   звичайний UI-текст), НЕ текст-оверлей поверх зображення — пряма вимога
+   власника ("важливо там не було підписів, як наразі є"). Той самий
+   принцип, що вже застосований до .rail__card (DiscographyRail). */
 .gallery__tile {
   position: relative;
-  aspect-ratio: 3 / 4;
   border: none;
   border-radius: var(--radius-card);
   overflow: hidden;
-  padding: 16px;
-  display: flex;
-  align-items: flex-end;
+  background: var(--ink-800);
   text-align: left;
   color: var(--paper-50);
+  display: flex;
+  flex-direction: column;
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.gallery__tile span {
+.gallery__tile-caption {
   position: relative;
   z-index: 1;
   font-weight: 700;
-  font-size: 14px;
-}
-
-.gallery__tile::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(8, 9, 11, 0.75));
+  font-size: 13px;
+  padding: 10px 12px;
 }
 
 .gallery__tile img {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+  display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   background: var(--ink-800);
   transition: transform 700ms var(--ease-ui);
+}
+
+.gallery__tile:hover,
+.gallery__tile:focus-visible {
+  transform: translateY(-4px);
 }
 
 .gallery__tile:hover img,
@@ -2071,16 +2164,35 @@ h3 {
   visibility: visible;
 }
 
+/* Стейдж — фото і підпис вертикальним стеком, легкий scale+fade при
+   відкритті (без справжнього shared-element/FLIP-переходу, який
+   потребував би зайвого JS-виміру позиції плитки — цей компроміс дає
+   помітний "вау"-момент без ризику зламати layout). */
+.gallery-modal__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: min(92vw, 620px);
+  transform: scale(0.94);
+  opacity: 0;
+  transition: transform 420ms var(--ease-ui), opacity 420ms var(--ease-ui);
+}
+
+.gallery-modal.is-open .gallery-modal__stage {
+  transform: scale(1);
+  opacity: 1;
+}
+
 .gallery-modal__frame {
   width: min(92vw, 620px);
+  max-height: 72vh;
   aspect-ratio: 3 / 4;
   border-radius: var(--radius-card);
   background: var(--ink-800);
   position: relative;
-  display: flex;
-  align-items: flex-end;
-  padding: 32px;
   overflow: hidden;
+  border: 1px solid var(--line-on-dark);
 }
 
 .gallery-modal__frame img {
@@ -2089,22 +2201,29 @@ h3 {
   z-index: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
-.gallery-modal__frame span {
-  position: relative;
-  z-index: 1;
+/* Підпис/лічильник — під фото, звичайний текстовий рядок, НЕ оверлей
+   поверх зображення (той самий принцип, що й у сітці галереї). */
+.gallery-modal__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.gallery-modal__caption {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.6rem;
+  font-size: 1.1rem;
 }
 
-.gallery-modal__frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(8, 9, 11, 0.8));
+.gallery-modal__count {
+  font-size: 13px;
+  color: var(--chrome-300);
+  white-space: nowrap;
 }
 
 .gallery-modal__close,

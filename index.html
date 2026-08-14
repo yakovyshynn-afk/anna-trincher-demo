@@ -175,11 +175,64 @@
   <a class="mobile-menu__ticket" href="#next-show">Придбати квитки</a>
 </div>
 
+<!-- ===== БЛОК: SOCIAL RAIL =====
+     Раніше жив всередині .hero (position:absolute) і зникав при скролі.
+     За прямою вимогою власника — тепер завжди на місці, незалежно від
+     скролу (position:fixed відносно viewport). Винесено на рівень <body>
+     (не всередині .hero) навмисно: .hero має isolation:isolate (власний
+     stacking context), тож fixed-нащадок всередині нього міг би
+     "загубитись" під пізнішими секціями DOM, що також створюють власний
+     stacking context — на верхньому рівні цей ризик відсутній. Іконки —
+     власні прості монохромні SVG-гліфи (у стилі поширених open-source
+     icon sets), не офіційні лого платформ. Тільки desktop (≥1024px) —
+     на мобільному ширина екрана замала для окремої колонки поруч з
+     контентом; ті самі канали доступні в секціях "Стежити"/футер/Контакти. -->
+<div class="social-rail" aria-label="Офіційні канали Анни Трінчер">
+  <a href="https://www.instagram.com/annatrincher_official" target="_blank" rel="noopener noreferrer" aria-label="Відкрити Instagram Анни Трінчер">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5.5" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/>
+    </svg>
+  </a>
+  <a href="https://www.tiktok.com/@annatrincher" target="_blank" rel="noopener noreferrer" aria-label="Відкрити TikTok Анни Трінчер">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+      <path d="M14 3v10.6a3.6 3.6 0 1 1-3-3.55" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 3c.4 2.3 2.1 4 4.3 4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+  <a href="https://www.youtube.com/@annatrincher" target="_blank" rel="noopener noreferrer" aria-label="Відкрити YouTube-канал Анни Трінчер">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+      <rect x="2.4" y="6" width="19.2" height="12" rx="4" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M10.4 9.3 15.5 12 10.4 14.7Z" fill="currentColor"/>
+    </svg>
+  </a>
+  <a href="https://music.apple.com/ua/artist/анна-трінчер/1436704585" target="_blank" rel="noopener noreferrer" aria-label="Відкрити сторінку Анни Трінчер на Apple Music">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+      <circle cx="8.3" cy="16.2" r="2.1" fill="currentColor"/>
+      <circle cx="15.3" cy="14.6" r="2.1" fill="currentColor"/>
+      <path d="M10.4 16.2V6.9L17.4 5.1v9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+  <a href="https://karabas.com/tag=anna-trincher/" target="_blank" rel="noopener noreferrer" aria-label="Відкрити всі концерти на Karabas">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+      <path d="M3 9a2 2 0 0 0 0-4h18a2 2 0 0 0 0 4 2 2 0 0 0 0 4 2 2 0 0 0 0 4H3a2 2 0 0 0 0-4 2 2 0 0 0 0-4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M14 5.5v11" stroke="currentColor" stroke-width="1.5" stroke-dasharray="1.6 2.1" stroke-linecap="round"/>
+    </svg>
+  </a>
+</div>
+
 <main id="main">
 
   <!-- ===== БЛОК: HERO ===== -->
   <section class="hero" id="hero">
     <div class="hero__field" aria-hidden="true"></div>
+    <!-- Космічний starfield — canvas з процедурно згенерованими зорями
+         (розмір/яскравість/легке мерехтіння), портовано з ідеї "starfield
+         background" (21st.dev) на vanilla Canvas API, без бібліотек.
+         Малюється JS (script.js) поверх .hero__field, під orbit-колом і
+         портретом. Статичний кадр при prefers-reduced-motion/Save-Data. -->
+    <canvas class="hero__stars" id="heroStars" aria-hidden="true"></canvas>
     <svg class="hero__orbit" viewBox="0 0 400 400" aria-hidden="true">
       <circle cx="200" cy="200" r="176"></circle>
       <path d="M 376 200 A 176 176 0 0 1 200 376"></path>
@@ -216,43 +269,6 @@
     </div>
 
     <a href="#featured-release" class="hero__scrollcue">Гортайте</a>
-
-    <!-- Іконки — власні прості монохромні SVG-гліфи (у стилі поширених
-         open-source icon sets), не офіційні лого платформ. -->
-    <div class="hero__social" aria-label="Офіційні канали Анни Трінчер">
-      <a href="https://www.instagram.com/annatrincher_official" target="_blank" rel="noopener noreferrer" aria-label="Відкрити Instagram Анни Трінчер">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-          <rect x="3" y="3" width="18" height="18" rx="5.5" stroke="currentColor" stroke-width="1.6"/>
-          <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/>
-          <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/>
-        </svg>
-      </a>
-      <a href="https://www.tiktok.com/@annatrincher" target="_blank" rel="noopener noreferrer" aria-label="Відкрити TikTok Анни Трінчер">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-          <path d="M14 3v10.6a3.6 3.6 0 1 1-3-3.55" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M14 3c.4 2.3 2.1 4 4.3 4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <a href="https://www.youtube.com/@annatrincher" target="_blank" rel="noopener noreferrer" aria-label="Відкрити YouTube-канал Анни Трінчер">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-          <rect x="2.4" y="6" width="19.2" height="12" rx="4" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M10.4 9.3 15.5 12 10.4 14.7Z" fill="currentColor"/>
-        </svg>
-      </a>
-      <a href="https://music.apple.com/ua/artist/анна-трінчер/1436704585" target="_blank" rel="noopener noreferrer" aria-label="Відкрити сторінку Анни Трінчер на Apple Music">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-          <circle cx="8.3" cy="16.2" r="2.1" fill="currentColor"/>
-          <circle cx="15.3" cy="14.6" r="2.1" fill="currentColor"/>
-          <path d="M10.4 16.2V6.9L17.4 5.1v9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <a href="https://karabas.com/tag=anna-trincher/" target="_blank" rel="noopener noreferrer" aria-label="Відкрити всі концерти на Karabas">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-          <path d="M3 9a2 2 0 0 0 0-4h18a2 2 0 0 0 0 4 2 2 0 0 0 0 4 2 2 0 0 0 0 4H3a2 2 0 0 0 0-4 2 2 0 0 0 0-4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M14 5.5v11" stroke="currentColor" stroke-width="1.5" stroke-dasharray="1.6 2.1" stroke-linecap="round"/>
-        </svg>
-      </a>
-    </div>
   </section>
 
   <!-- ===== БЛОК: FEATURED RELEASE ===== -->
@@ -535,31 +551,31 @@
       <!-- Хронологічний порядок (найстаріший → найновіший, «Маргарита» — окремо featured вище). -->
       <div class="video__rail reveal" style="--d:120ms">
         <button type="button" class="video__card" data-open-video data-video-id="yKmE2MHGjG8" data-video-title="Колоски" aria-label="Дивитися кліп «Колоски»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" alt="" loading="lazy"><span>Колоски</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Колоски</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай" aria-label="Дивитися кліп «Зірочка палай»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" alt="" loading="lazy"><span>Зірочка палай</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Зірочка палай</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії" aria-label="Дивитися кліп «Півонії»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" alt="" loading="lazy"><span>Півонії</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Півонії</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina" aria-label="Дивитися кліп «No cocaina»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" alt="" loading="lazy"><span>No cocaina</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>No cocaina</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама" aria-label="Дивитися кліп «Твоя мама»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" alt="" loading="lazy"><span>Твоя мама</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Твоя мама</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром" aria-label="Дивитися кліп «Бар за баром»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/eazVVV0-YWk/maxresdefault.jpg" alt="" loading="lazy"><span>Бар за баром</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/eazVVV0-YWk/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Бар за баром</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла" aria-label="Дивитися кліп «Вином текла»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/D1l6Wp2pP_8/maxresdefault.jpg" alt="" loading="lazy"><span>Вином текла</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/D1l6Wp2pP_8/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Вином текла</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі" aria-label="Дивитися кліп «Очі»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/Dksj1wxC7rg/maxresdefault.jpg" alt="" loading="lazy"><span>Очі</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/Dksj1wxC7rg/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Очі</span>
         </button>
         <button type="button" class="video__card" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш" aria-label="Дивитися кліп «Треш»">
-          <img class="video__card-poster" src="https://i.ytimg.com/vi/a8zgbf9cLEY/maxresdefault.jpg" alt="" loading="lazy"><span>Треш</span>
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/a8zgbf9cLEY/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Треш</span>
         </button>
       </div>
     </div>
@@ -630,38 +646,60 @@
         <h2>Галерея</h2>
       </div>
 
+      <!-- 12 реальних фото з особистого архіву власника (концертні/портретні
+           кадри, source-assets/gallery-raw/, 50 наданих — відібрано 12 за
+           різноманітністю й композицією). Підпис — звичайний UI-текст ПІД
+           фото (.gallery__tile-caption), не оверлей поверх зображення —
+           пряма вимога власника: жодного тексту, накладеного на саме фото.
+           gaps.md — деталі відбору й джерело. -->
       <div class="gallery__grid reveal">
-        <button type="button" class="gallery__tile" data-image="assets/gallery-kyiv.webp" data-caption="Зірочка. Палац — Київ, 2026">
-          <img class="gallery__cover" src="assets/gallery-kyiv.webp" alt="Анна Трінчер, офіційна афіша концерту в Палаці спорту (Karabas)" loading="lazy" width="560" height="535">
-          <span>Зірочка. Палац — Київ, 2026</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-02-circle-sing.webp" data-caption="Кола світла — виступ">
+          <img class="gallery__cover" src="assets/gallery/gallery-02-circle-sing.webp" alt="Анна Трінчер виступає на сцені в підсвіченому колі" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Кола світла — виступ</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery-tour.webp" data-caption="Тур містами — 2026">
-          <img class="gallery__cover" src="assets/gallery-tour.webp" alt="Анна Трінчер, офіційний тур-кадр (Karabas, Одеса/Львів/Вінниця)" loading="lazy" width="640" height="505">
-          <span>Тур містами — 2026</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-01-stage-band.webp" data-caption="На сцені з гуртом">
+          <img class="gallery__cover" src="assets/gallery/gallery-01-stage-band.webp" alt="Анна Трінчер на сцені з гуртом, драматичне червоне світло" loading="lazy" width="900" height="1199">
+          <span class="gallery__tile-caption">На сцені з гуртом</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/gAXU1Bvxngg/maxresdefault.jpg" data-caption="Маргарита — 2026">
-          <img class="gallery__cover" src="https://i.ytimg.com/vi/gAXU1Bvxngg/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Маргарита»" loading="lazy" width="1280" height="720">
-          <span>Маргарита — 2026</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-05-portrait-glam.webp" data-caption="За лаштунками">
+          <img class="gallery__cover" src="assets/gallery/gallery-05-portrait-glam.webp" alt="Портрет Анни Трінчер за лаштунками, сценічний костюм" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">За лаштунками</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" data-caption="Зірочка палай — 2025">
-          <img class="gallery__cover" src="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Зірочка палай»" loading="lazy" width="1280" height="720">
-          <span>Зірочка палай — 2025</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-04-flame-silhouette.webp" data-caption="Вогняний фінал">
+          <img class="gallery__cover" src="assets/gallery/gallery-04-flame-silhouette.webp" alt="Силует Анни Трінчер на тлі вогняного сценічного ефекту" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Вогняний фінал</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" data-caption="No cocaina — 2025">
-          <img class="gallery__cover" src="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" alt="Кадр з офіційного кліпу «No cocaina»" loading="lazy" width="1280" height="720">
-          <span>No cocaina — 2025</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-03-circle-point.webp" data-caption="Енергія залу">
+          <img class="gallery__cover" src="assets/gallery/gallery-03-circle-point.webp" alt="Анна Трінчер на сцені в динамічному русі до глядачів" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Енергія залу</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" data-caption="Твоя мама — 2026">
-          <img class="gallery__cover" src="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Твоя мама»" loading="lazy" width="1280" height="720">
-          <span>Твоя мама — 2026</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-06-portrait-sparkle.webp" data-caption="Сяйво кристалів">
+          <img class="gallery__cover" src="assets/gallery/gallery-06-portrait-sparkle.webp" alt="Портрет Анни Трінчер у сценічному костюмі з кристалами" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Сяйво кристалів</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" data-caption="Півонії — 2025">
-          <img class="gallery__cover" src="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Півонії»" loading="lazy" width="1280" height="720">
-          <span>Півонії — 2025</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-07-seated-red.webp" data-caption="Червоний кадр">
+          <img class="gallery__cover" src="assets/gallery/gallery-07-seated-red.webp" alt="Анна Трінчер на сцені, редакційний кадр на червоному тлі" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Червоний кадр</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" data-caption="Колоски — 2023">
-          <img class="gallery__cover" src="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Колоски»" loading="lazy" width="1280" height="720">
-          <span>Колоски — 2023</span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-08-dance-pose.webp" data-caption="У русі">
+          <img class="gallery__cover" src="assets/gallery/gallery-08-dance-pose.webp" alt="Анна Трінчер у динамічній сценічній позі" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">У русі</span>
+        </button>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-09-backstage-robe.webp" data-caption="Тиша перед виходом">
+          <img class="gallery__cover" src="assets/gallery/gallery-09-backstage-robe.webp" alt="Анна Трінчер за лаштунками перед виступом" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Тиша перед виходом</span>
+        </button>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-10-golden-portrait.webp" data-caption="Золоте світло">
+          <img class="gallery__cover" src="assets/gallery/gallery-10-golden-portrait.webp" alt="Портрет Анни Трінчер у теплому золотому сценічному світлі" loading="lazy" width="900" height="1199">
+          <span class="gallery__tile-caption">Золоте світло</span>
+        </button>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-11-bw-performance.webp" data-caption="Чорно-біле — сцена">
+          <img class="gallery__cover" src="assets/gallery/gallery-11-bw-performance.webp" alt="Чорно-білий кадр виступу Анни Трінчер на сцені" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Чорно-біле — сцена</span>
+        </button>
+        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-12-bw-artistic.webp" data-caption="Силует">
+          <img class="gallery__cover" src="assets/gallery/gallery-12-bw-artistic.webp" alt="Артистичний чорно-білий силует Анни Трінчер на сцені" loading="lazy" width="900" height="1200">
+          <span class="gallery__tile-caption">Силует</span>
         </button>
       </div>
     </div>
@@ -797,7 +835,16 @@
   <button type="button" class="gallery-modal__nav gallery-modal__nav--prev" id="galleryModalPrev" aria-label="Попереднє зображення">
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 2 L4 8 L10 14" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
-  <div class="gallery-modal__frame" id="galleryModalFrame"></div>
+  <!-- Підпис — під фото, окремим рядком (gallery-modal__caption), НЕ
+       оверлей поверх зображення: та сама вимога "без тексту на фото", що й
+       у сітці галереї. -->
+  <div class="gallery-modal__stage">
+    <div class="gallery-modal__frame" id="galleryModalFrame"></div>
+    <div class="gallery-modal__meta">
+      <span class="gallery-modal__caption" id="galleryModalCaption"></span>
+      <span class="gallery-modal__count" id="galleryModalCount"></span>
+    </div>
+  </div>
   <button type="button" class="gallery-modal__nav gallery-modal__nav--next" id="galleryModalNext" aria-label="Наступне зображення">
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2 L12 8 L6 14" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
