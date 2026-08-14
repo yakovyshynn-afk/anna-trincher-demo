@@ -183,12 +183,18 @@ h3 {
   border-radius: var(--radius-pill);
   font-weight: 700;
   text-decoration: none;
-  transform: translateY(-140%);
-  transition: transform var(--duration-fast) var(--ease-ui);
+  /* Той самий клас багу, що й .toast (нижче): відсоток transform рахується
+     від власної висоти, теоретично може лишити краєчок видимим. opacity —
+     запасний рубіж, а НЕ visibility/display:none, бо skip-link мусить
+     лишатись фокусованим по Tab навіть приховано. */
+  transform: translateY(calc(-100% - 40px));
+  opacity: 0;
+  transition: transform var(--duration-fast) var(--ease-ui), opacity var(--duration-fast) var(--ease-ui);
 }
 
 .skip-link:focus-visible {
   transform: translateY(0);
+  opacity: 1;
 }
 
 :focus-visible {
@@ -750,6 +756,16 @@ h3 {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+/* Власник: зсунути "Гортайте" правіше від самого лівого краю сторінки —
+   ближче до зони під центрованим блоком wordmark/кнопок, не впритул до
+   краю viewport. Тільки desktop — новий вертикальний стек hero тепер сам
+   по собі центрований, скролкью орієнтується на цю ж вісь. */
+@media (min-width: 1024px) {
+  .hero__scrollcue {
+    left: calc(50% - 280px);
+  }
 }
 
 .hero__scrollcue::before {
@@ -2160,12 +2176,22 @@ h3 {
   text-underline-offset: 3px;
 }
 
-/* ===== БЛОК: TOAST ===== */
+/* ===== БЛОК: TOAST =====
+   Баг-фікс: раніше приховувався лише через transform: translateY(140%) —
+   140% рахується від ВЛАСНОЇ висоти елемента, а вона до першого виклику
+   showToast() мінімальна (порожній textContent), тож зсуву бракувало й
+   білий краєчок pill стабільно "висовувався" знизу-по-центру на кожній
+   секції під час скролу (fixed-позиціонування). Тепер приховується
+   гарантовано — opacity + visibility, transform лишається тільки для
+   плавного зсуву в анімації появи/зникнення. */
 .toast {
   position: fixed;
   left: 50%;
   bottom: max(24px, env(safe-area-inset-bottom));
-  transform: translate(-50%, 140%);
+  transform: translate(-50%, calc(100% + 40px));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   background: var(--paper-50);
   color: var(--ink-950);
   font-weight: 700;
@@ -2173,11 +2199,15 @@ h3 {
   padding: 12px 22px;
   border-radius: var(--radius-pill);
   z-index: 95;
-  transition: transform var(--duration-base) var(--ease-ui);
+  transition: transform var(--duration-base) var(--ease-ui), opacity var(--duration-base) var(--ease-ui),
+    visibility var(--duration-base);
 }
 
 .toast.is-visible {
   transform: translate(-50%, 0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* ===== БЛОК: REVEAL-ON-SCROLL =====
