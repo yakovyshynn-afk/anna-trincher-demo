@@ -16,6 +16,7 @@
     if (!intro) return;
     intro.classList.add("is-leaving");
     document.body.classList.remove("intro-lock");
+    if (window.__stopIntroParticles) window.__stopIntroParticles();
     window.setTimeout(function () {
       intro.setAttribute("hidden", "");
       intro.setAttribute("aria-hidden", "true");
@@ -24,23 +25,27 @@
   }
 
   function startIntro() {
-    var alreadySeen = sessionStorage.getItem("introSeen") === "true";
+    /* Власник: інтро має програватись ЩОРАЗУ при завантаженні сторінки,
+       не лише раз за сесію — sessionStorage-логіка "introSeen" повністю
+       прибрана. Єдині легітимні причини пропустити повне інтро лишаються
+       доступність (prefers-reduced-motion) і слабке з'єднання
+       (navigator.connection.saveData), а не факт повторного візиту. */
     if (!intro) {
       startHero();
       return;
     }
-    if (alreadySeen || reduceMotion || saveData) {
+    if (reduceMotion || saveData) {
       intro.setAttribute("hidden", "");
       intro.setAttribute("aria-hidden", "true");
       startHero();
       return;
     }
     document.body.classList.add("intro-lock");
-    sessionStorage.setItem("introSeen", "true");
     var introDuration = window.innerWidth < 640 ? 1300 : 4400;
-    /* Прогрес-лінія (.intro__progress-fill) читає цю CSS-змінну для своєї
-       transition-duration — вона росте синхронно з реальним таймером
-       інтро, а не за окремою декоративною анімацією. */
+    /* Орбітальне кільце-прогрес (.intro__orbit-progress) читає цю
+       CSS-змінну для своєї transition-duration (stroke-dashoffset) —
+       воно заповнюється синхронно з реальним таймером інтро, а не за
+       окремою декоративною анімацією. */
     intro.style.setProperty("--intro-duration", introDuration + "ms");
     intro.classList.add("is-playing");
     var timer = window.setTimeout(finishIntro, introDuration);
@@ -64,6 +69,116 @@
     var hero = document.getElementById("hero");
     if (hero) hero.classList.add("is-in");
   }
+
+  /* ===== БЛОК: ІНТРО — ORBITAL PARTICLES (canvas) =====
+     Шостий раунд, доповнення власника: "максимально багато частинок",
+     які відображають творчість Анни (зірки/іскри в палітрі сайту) —
+     перше враження має бути максимально "вау" для фанатів з рілсу.
+     Той самий рецепт, що й .hero__stars (vanilla Canvas API, без
+     бібліотек), але густіше й у трьох фірмових кольорах (chrome-silver/
+     signal-red/ember), бо інтро коротке (кілька секунд) і не мусить
+     тримати такий бюджет продуктивності, як постійний фон hero. Статичний
+     кадр (без rAF-циклу) при prefers-reduced-motion/Save-Data — інтро й
+     так одразу пропускається для цих випадків (startIntro вище), але
+     функція лишається безпечною сама по собі. Зупиняється явно у
+     finishIntro() (window.__stopIntroParticles), щоб rAF-цикл не тривав
+     вічно у фоні після того, як інтро вже прибрано з DOM. */
+  (function initIntroParticles() {
+    var canvas = document.getElementById("introParticles");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var width = 0;
+    var height = 0;
+    var particles = [];
+    var animate = !reduceMotion && !saveData;
+    var active = true;
+
+    /* Палітра сайту: chrome-300, signal-red, ember-500 — ваги визначають
+       приблизну частку кожного кольору серед усіх частинок. */
+    var palette = [
+      { rgb: "200, 203, 208", weight: 0.55 },
+      { rgb: "250, 59, 53", weight: 0.3 },
+      { rgb: "255, 116, 38", weight: 0.15 }
+    ];
+
+    function pickColor() {
+      var r = Math.random();
+      var acc = 0;
+      for (var i = 0; i < palette.length; i++) {
+        acc += palette[i].weight;
+        if (r <= acc) return palette[i].rgb;
+      }
+      return palette[0].rgb;
+    }
+
+    function buildParticles() {
+      var area = width * height;
+      var count = Math.max(90, Math.min(320, Math.round(area / 2600)));
+      particles = [];
+      for (var i = 0; i < count; i++) {
+        var angle = Math.random() * Math.PI * 2;
+        var drift = 0.15 + Math.random() * 0.5;
+        particles.push({
+          x: Math.random(),
+          y: Math.random(),
+          r: 0.5 + Math.random() * 2.1,
+          baseAlpha: 0.22 + Math.random() * 0.68,
+          rgb: pickColor(),
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.4 + Math.random() * 1.5,
+          driftX: Math.cos(angle) * drift,
+          driftY: Math.sin(angle) * drift
+        });
+      }
+    }
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildParticles();
+      draw(0);
+    }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, width, height);
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        var alpha = p.baseAlpha * (0.5 + 0.5 * Math.sin(t * 0.0013 * p.speed + p.phase));
+        if (animate) {
+          p.x += p.driftX * 0.0022;
+          p.y += p.driftY * 0.0022;
+          if (p.x < -0.05) p.x = 1.05;
+          if (p.x > 1.05) p.x = -0.05;
+          if (p.y < -0.05) p.y = 1.05;
+          if (p.y > 1.05) p.y = -0.05;
+        }
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(" + p.rgb + ", " + alpha.toFixed(3) + ")";
+        ctx.arc(p.x * width, p.y * height, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function loop(t) {
+      if (!active) return;
+      draw(t);
+      window.requestAnimationFrame(loop);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+    if (animate) {
+      window.requestAnimationFrame(loop);
+    }
+
+    window.__stopIntroParticles = function () {
+      active = false;
+    };
+  })();
 
   startIntro();
 

@@ -128,16 +128,34 @@
 <!-- ===== БЛОК: ІНТРО =====
      Реальний wordmark (той самий assets/wordmark-real.png, що й у hero) —
      не окремий текстовий рядок іншим шрифтом. Reveal через clip-path-wipe
-     на самому зображенні + прогрес-лінія, синхронізована з JS-таймером
-     інтро (--intro-duration, script.js). -->
+     на самому зображенні. Шостий раунд правок (за прямим запитом
+     власника):
+     1) Програється ЩОРАЗУ при завантаженні (sessionStorage-логіка
+        "показати лише раз за сесію" прибрана повністю — script.js).
+     2) Прогрес-індикатор — тепер орбітальне кільце (.intro__orbit),
+        та сама візуальна мова, що й orbital ring у hero (.hero__orbit):
+        тонке коло-трек + анімована світна дуга, яка заповнюється
+        синхронно з реальним таймером інтро (--intro-duration,
+        script.js), плюс дві "планети", що безперервно обертаються
+        навколо (.intro__orbit-dots) для відчуття руху.
+     3) Canvas із частинками (.intro__particles, script.js
+        initIntroParticles) — щільний розсип зірок/іскор у фірмовій
+        палітрі (chrome-silver/signal-red/ember), перше враження "вау"
+        для фанатів і нових слухачів з рілсу. -->
 <div id="intro" class="intro" aria-hidden="false">
+  <canvas class="intro__particles" id="introParticles" aria-hidden="true"></canvas>
   <div class="grain" aria-hidden="true"></div>
   <div class="intro__stage">
+    <svg class="intro__orbit" viewBox="0 0 320 320" aria-hidden="true">
+      <circle class="intro__orbit-track" cx="160" cy="160" r="140"></circle>
+      <circle class="intro__orbit-progress" cx="160" cy="160" r="140"></circle>
+    </svg>
+    <div class="intro__orbit-dots" aria-hidden="true">
+      <span class="intro__orbit-spin intro__orbit-spin--a"><span class="intro__orbit-dot intro__orbit-dot--red"></span></span>
+      <span class="intro__orbit-spin intro__orbit-spin--b"><span class="intro__orbit-dot intro__orbit-dot--chrome"></span></span>
+    </div>
     <div class="intro__mark">
       <img src="assets/wordmark-real.png" alt="Анна Трінчер" width="864" height="239">
-    </div>
-    <div class="intro__progress" aria-hidden="true">
-      <span class="intro__progress-fill"></span>
     </div>
   </div>
   <button type="button" class="intro__skip" id="introSkip">Пропустити вступ</button>
@@ -548,33 +566,37 @@
         </span>
       </button>
 
-      <!-- Хронологічний порядок (найстаріший → найновіший, «Маргарита» — окремо featured вище). -->
-      <div class="video__rail reveal" style="--d:120ms">
-        <button type="button" class="video__card" data-open-video data-video-id="yKmE2MHGjG8" data-video-title="Колоски" aria-label="Дивитися кліп «Колоски»">
+      <!-- Шостий раунд: усі інші кліпи — горизонтальна scroll-snap стрічка
+           (той самий каркас "rail", що й DiscographyRail/GalleryRail), не
+           статична сітка — власник: "у слайдер/карусель, а не 3-колонкова
+           сітка". Хронологічний порядок (найстаріший → найновіший,
+           «Маргарита» — окремо featured вище). -->
+      <div class="rail video__rail reveal" role="list" aria-label="Кліпи Анни Трінчер" style="--d:120ms">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="yKmE2MHGjG8" data-video-title="Колоски" aria-label="Дивитися кліп «Колоски»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Колоски</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай" aria-label="Дивитися кліп «Зірочка палай»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай" aria-label="Дивитися кліп «Зірочка палай»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Зірочка палай</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії" aria-label="Дивитися кліп «Півонії»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії" aria-label="Дивитися кліп «Півонії»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Півонії</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina" aria-label="Дивитися кліп «No cocaina»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina" aria-label="Дивитися кліп «No cocaina»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>No cocaina</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама" aria-label="Дивитися кліп «Твоя мама»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама" aria-label="Дивитися кліп «Твоя мама»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Твоя мама</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром" aria-label="Дивитися кліп «Бар за баром»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром" aria-label="Дивитися кліп «Бар за баром»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/eazVVV0-YWk/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Бар за баром</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла" aria-label="Дивитися кліп «Вином текла»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла" aria-label="Дивитися кліп «Вином текла»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/D1l6Wp2pP_8/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Вином текла</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі" aria-label="Дивитися кліп «Очі»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі" aria-label="Дивитися кліп «Очі»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/Dksj1wxC7rg/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Очі</span>
         </button>
-        <button type="button" class="video__card" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш" aria-label="Дивитися кліп «Треш»">
+        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш" aria-label="Дивитися кліп «Треш»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/a8zgbf9cLEY/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Треш</span>
         </button>
       </div>
@@ -648,58 +670,50 @@
 
       <!-- 12 реальних фото з особистого архіву власника (концертні/портретні
            кадри, source-assets/gallery-raw/, 50 наданих — відібрано 12 за
-           різноманітністю й композицією). Підпис — звичайний UI-текст ПІД
-           фото (.gallery__tile-caption), не оверлей поверх зображення —
-           пряма вимога власника: жодного тексту, накладеного на саме фото.
-           gaps.md — деталі відбору й джерело. -->
-      <div class="gallery__grid reveal">
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-02-circle-sing.webp" data-caption="Кола світла — виступ">
+           різноманітністю й композицією). Шостий раунд правок: БЕЗ ЖОДНОГО
+           тексту на сітці-прев'ю (ні оверлей, ні підпис під фото — пряма
+           вимога власника) — підпис (data-caption) лишається тільки у
+           fullscreen-модалці при відкритті конкретного фото. Горизонтальна
+           scroll-snap стрічка (клас "rail" — той самий технічний каркас,
+           що й DiscographyRail) замість 4-колонкової сітки — компактно
+           (один рядок), ефектно (нативний touch-скрол), без "довгого
+           блоку по висоті сторінки". -->
+      <div class="rail gallery__rail reveal" role="list" aria-label="Фотогалерея Анни Трінчер">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-02-circle-sing.webp" data-caption="Кола світла — виступ" aria-label="Відкрити фото: кола світла — виступ">
           <img class="gallery__cover" src="assets/gallery/gallery-02-circle-sing.webp" alt="Анна Трінчер виступає на сцені в підсвіченому колі" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Кола світла — виступ</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-01-stage-band.webp" data-caption="На сцені з гуртом">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-01-stage-band.webp" data-caption="На сцені з гуртом" aria-label="Відкрити фото: на сцені з гуртом">
           <img class="gallery__cover" src="assets/gallery/gallery-01-stage-band.webp" alt="Анна Трінчер на сцені з гуртом, драматичне червоне світло" loading="lazy" width="900" height="1199">
-          <span class="gallery__tile-caption">На сцені з гуртом</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-05-portrait-glam.webp" data-caption="За лаштунками">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-05-portrait-glam.webp" data-caption="За лаштунками" aria-label="Відкрити фото: за лаштунками">
           <img class="gallery__cover" src="assets/gallery/gallery-05-portrait-glam.webp" alt="Портрет Анни Трінчер за лаштунками, сценічний костюм" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">За лаштунками</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-04-flame-silhouette.webp" data-caption="Вогняний фінал">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-04-flame-silhouette.webp" data-caption="Вогняний фінал" aria-label="Відкрити фото: вогняний фінал">
           <img class="gallery__cover" src="assets/gallery/gallery-04-flame-silhouette.webp" alt="Силует Анни Трінчер на тлі вогняного сценічного ефекту" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Вогняний фінал</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-03-circle-point.webp" data-caption="Енергія залу">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-03-circle-point.webp" data-caption="Енергія залу" aria-label="Відкрити фото: енергія залу">
           <img class="gallery__cover" src="assets/gallery/gallery-03-circle-point.webp" alt="Анна Трінчер на сцені в динамічному русі до глядачів" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Енергія залу</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-06-portrait-sparkle.webp" data-caption="Сяйво кристалів">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-06-portrait-sparkle.webp" data-caption="Сяйво кристалів" aria-label="Відкрити фото: сяйво кристалів">
           <img class="gallery__cover" src="assets/gallery/gallery-06-portrait-sparkle.webp" alt="Портрет Анни Трінчер у сценічному костюмі з кристалами" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Сяйво кристалів</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-07-seated-red.webp" data-caption="Червоний кадр">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-07-seated-red.webp" data-caption="Червоний кадр" aria-label="Відкрити фото: червоний кадр">
           <img class="gallery__cover" src="assets/gallery/gallery-07-seated-red.webp" alt="Анна Трінчер на сцені, редакційний кадр на червоному тлі" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Червоний кадр</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-08-dance-pose.webp" data-caption="У русі">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-08-dance-pose.webp" data-caption="У русі" aria-label="Відкрити фото: у русі">
           <img class="gallery__cover" src="assets/gallery/gallery-08-dance-pose.webp" alt="Анна Трінчер у динамічній сценічній позі" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">У русі</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-09-backstage-robe.webp" data-caption="Тиша перед виходом">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-09-backstage-robe.webp" data-caption="Тиша перед виходом" aria-label="Відкрити фото: тиша перед виходом">
           <img class="gallery__cover" src="assets/gallery/gallery-09-backstage-robe.webp" alt="Анна Трінчер за лаштунками перед виступом" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Тиша перед виходом</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-10-golden-portrait.webp" data-caption="Золоте світло">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-10-golden-portrait.webp" data-caption="Золоте світло" aria-label="Відкрити фото: золоте світло">
           <img class="gallery__cover" src="assets/gallery/gallery-10-golden-portrait.webp" alt="Портрет Анни Трінчер у теплому золотому сценічному світлі" loading="lazy" width="900" height="1199">
-          <span class="gallery__tile-caption">Золоте світло</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-11-bw-performance.webp" data-caption="Чорно-біле — сцена">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-11-bw-performance.webp" data-caption="Чорно-біле — сцена" aria-label="Відкрити фото: чорно-біле — сцена">
           <img class="gallery__cover" src="assets/gallery/gallery-11-bw-performance.webp" alt="Чорно-білий кадр виступу Анни Трінчер на сцені" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Чорно-біле — сцена</span>
         </button>
-        <button type="button" class="gallery__tile" data-image="assets/gallery/gallery-12-bw-artistic.webp" data-caption="Силует">
+        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-12-bw-artistic.webp" data-caption="Силует" aria-label="Відкрити фото: силует">
           <img class="gallery__cover" src="assets/gallery/gallery-12-bw-artistic.webp" alt="Артистичний чорно-білий силует Анни Трінчер на сцені" loading="lazy" width="900" height="1200">
-          <span class="gallery__tile-caption">Силует</span>
         </button>
       </div>
     </div>

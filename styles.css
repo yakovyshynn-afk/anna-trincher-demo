@@ -240,10 +240,118 @@ h3 {
   pointer-events: none;
 }
 
+/* Частинки — canvas на всю площину інтро (script.js initIntroParticles),
+   під усім рештою вмісту (grain/stage малюються пізніше в DOM-порядку,
+   отже зверху). */
+.intro__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
 .intro__stage {
   position: relative;
+  z-index: 1;
   text-align: center;
   padding-inline: 24px;
+}
+
+/* Орбітальне кільце — прогрес-індикатор інтро замість лінійної шкали,
+   узгоджено з orbital ring у hero (.hero__orbit): тонке коло-трек +
+   світна дуга. Дуга росте синхронно з реальним таймером інтро
+   (--intro-duration, script.js), той самий контракт, що раніше живив
+   .intro__progress-fill (transition ширини), тепер — stroke-dashoffset. */
+.intro__orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: clamp(300px, 78vw, 560px);
+  height: clamp(300px, 78vw, 560px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.intro__orbit-track {
+  fill: none;
+  stroke: var(--line-on-dark);
+  stroke-width: 1;
+}
+
+.intro__orbit-progress {
+  fill: none;
+  stroke: var(--signal-red);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 16px rgba(250, 59, 53, 0.6));
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  /* Довжина кола r=140 (viewBox 320×320): 2·π·140 ≈ 880. */
+  stroke-dasharray: 880;
+  stroke-dashoffset: 880;
+}
+
+.intro.is-playing .intro__orbit-progress {
+  transition: stroke-dashoffset var(--intro-duration, 4400ms) linear;
+  stroke-dashoffset: 0;
+}
+
+/* "Планети" — дві крапки безперервно обертаються навколо кільця (різна
+   швидкість/напрямок), суто декоративний орбітальний рух для "вау"
+   першого враження (доповнення власника). */
+.intro__orbit-dots {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: clamp(300px, 78vw, 560px);
+  height: clamp(300px, 78vw, 560px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.intro__orbit-spin {
+  position: absolute;
+  inset: 0;
+  display: block;
+  animation: introOrbitSpin 8s linear infinite;
+}
+
+.intro__orbit-spin--b {
+  animation-duration: 13s;
+  animation-direction: reverse;
+}
+
+.intro__orbit-dot {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+}
+
+.intro__orbit-dot--red {
+  background: var(--signal-red);
+  box-shadow: 0 0 14px rgba(250, 59, 53, 0.85);
+}
+
+.intro__orbit-dot--chrome {
+  top: auto;
+  bottom: -4px;
+  background: var(--chrome-300);
+  box-shadow: 0 0 10px rgba(200, 203, 208, 0.7);
+}
+
+@keyframes introOrbitSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Реальний wordmark — той самий файл, що й у hero (assets/wordmark-real.png),
@@ -251,6 +359,8 @@ h3 {
    clip-path wipe зліва направо поверх зображення + легкий glow/scale, а не
    просто fade. */
 .intro__mark {
+  position: relative;
+  z-index: 1;
   width: clamp(240px, 58vw, 640px);
   margin: 0 auto;
 }
@@ -277,32 +387,6 @@ h3 {
     transform: scale(1);
     filter: drop-shadow(0 0 0 rgba(250, 59, 53, 0));
   }
-}
-
-/* Прогрес-лінія — росте синхронно з реальним таймером інтро
-   (--intro-duration виставляється з script.js під фактичний introDuration,
-   різний на мобільному/десктопі), а не декоративна незалежна анімація. */
-.intro__progress {
-  width: min(60vw, 320px);
-  height: 3px;
-  margin: 26px auto 0;
-  background: var(--line-on-dark);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-}
-
-.intro__progress-fill {
-  display: block;
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, var(--signal-red), var(--ember-500));
-  border-radius: inherit;
-  box-shadow: 0 0 10px rgba(250, 59, 53, 0.6);
-}
-
-.intro.is-playing .intro__progress-fill {
-  transition: width var(--intro-duration, 4400ms) linear;
-  width: 100%;
 }
 
 .intro__skip {
@@ -350,7 +434,8 @@ h3 {
   .intro,
   .intro__mark img,
   .intro__skip,
-  .intro__progress-fill {
+  .intro__orbit-progress,
+  .intro__orbit-spin {
     animation: none !important;
     transition: opacity 150ms linear !important;
   }
@@ -360,8 +445,8 @@ h3 {
     filter: none;
     opacity: 1;
   }
-  .intro__progress-fill {
-    width: 100%;
+  .intro__orbit-progress {
+    stroke-dashoffset: 0;
   }
 }
 
@@ -1034,6 +1119,18 @@ h3 {
   z-index: 1;
   display: block;
   width: 100%;
+  /* height:auto — ОБОВ'ЯЗКОВО поряд з aspect-ratio на <img> з HTML
+     width/height-атрибутами (тут 420×420, потрібні для запобігання CLS).
+     Без явного height браузер бере "presentational hint" з самих
+     атрибутів (тут — буквально 420px) як реальне значення CSS-властивості
+     height, і це має ВИЩИЙ пріоритет у каскаді, ніж обчислення "auto" з
+     aspect-ratio — тобто aspect-ratio мовчки ІГНОРУЄТЬСЯ, картинка
+     розтягується/обрізається на реальну атрибутну висоту замість
+     квадрата. Це і був корінь регресу з "обрізаними" обкладинками —
+     виправлення підтверджено виміром getBoundingClientRect на живому
+     сайті (headless Chrome/CDP): було 548×420 (не квадрат), стало
+     548×548 після додавання height:auto. */
+  height: auto;
   aspect-ratio: 1 / 1;
   object-fit: contain;
   background: rgba(8, 9, 11, 0.3);
@@ -1390,6 +1487,12 @@ h3 {
 .rail__cover {
   display: block;
   width: 100%;
+  /* height:auto — той самий фікс регресу, що й .featured__cover вище:
+     без нього explicit width/height="420" HTML-атрибути (потрібні проти
+     CLS) перебивають aspect-ratio, і картка рендериться 186×420 замість
+     186×186 (виміряно живим CDP-запитом на getBoundingClientRect до
+     фіксу). */
+  height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   transition: transform 700ms var(--ease-ui);
@@ -1491,9 +1594,14 @@ h3 {
   border-top: 1px solid var(--line-on-dark-soft);
 }
 
+/* Шостий раунд: власник — "замало не на весь екран, забагато місця
+   забирає". На десктопі стрічка обмежена max-width (не на всю ширину
+   контейнера), лишається full-bleed лише на мобільному, де немає
+   проблеми з надмірним домінуванням (viewport і так вузький). */
 .video__featured {
   position: relative;
   width: 100%;
+  max-width: 560px;
   border-radius: var(--radius-card);
   aspect-ratio: 16 / 9;
   background: var(--ink-800);
@@ -1506,6 +1614,12 @@ h3 {
   overflow: hidden;
   cursor: pointer;
   text-align: left;
+}
+
+@media (max-width: 1023px) {
+  .video__featured {
+    max-width: none;
+  }
 }
 
 .video__poster {
@@ -1573,23 +1687,22 @@ h3 {
 
 .video__rail {
   margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  margin-top: 24px;
 }
 
-@media (min-width: 640px) {
-  .video__rail {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Картка кліпу — контейнер тепер 16:9 (реальна пропорція YouTube-постера,
-   не універсальна 4:5 форма для всього), постер block-рівня зверху, назва
-   під ним у нормальному потоці — той самий принцип, що й DiscographyRail. */
+/* Картка кліпу — 16:9 (реальна пропорція YouTube-постера), постер
+   block-рівня зверху, назва під ним у нормальному потоці — той самий
+   принцип, що й DiscographyRail. Шостий раунд: .video__rail тепер сам
+   .rail (горизонтальна scroll-snap стрічка, спільний каркас з
+   DiscographyRail/GalleryRail — власник: "у слайдер/карусель, а не
+   3-колонкова сітка"), тож картка — flex-item фіксованої ширини, не
+   grid-колонка на 100%. */
 .video__card {
   position: relative;
-  width: 100%;
+  flex: 0 0 auto;
+  width: clamp(240px, 30vw, 300px);
+  scroll-snap-align: start;
+  padding: 0;
   border-radius: var(--radius-card);
   border: 1px solid var(--line-on-dark);
   background: var(--ink-800);
@@ -1728,65 +1841,64 @@ h3 {
   max-width: 62ch;
 }
 
-/* ===== БЛОК: GALLERY ===== */
+/* ===== БЛОК: GALLERY =====
+   П'ятий раунд (4-кол. grid, підпис ПІД фото) власника не влаштував:
+   "хочу компактне рішення, а не довгий блок по висоті" + "взагалі
+   прибрати підписи з сітки" (не лише з оверлею — і варіант "під фото"
+   теж прибрати). Перебудовано на горизонтальну scroll-snap стрічку, той
+   самий технічний каркас, що й DiscographyRail (.rail — flex/overflow-x/
+   mask edge-fade/scrollbar, лише клас "rail" додається поряд з
+   "gallery__rail" у розмітці, щоб перевикористати вже готовий CSS+JS
+   edge-fade замість дублювання) — секція завжди рівно один рядок заввишки
+   (clamp по висоті картки), незалежно від кількості фото, і водночас
+   ефектніша за статичну сітку (нативний touch-скрол на мобільному,
+   плавний "гортати" жест). Підпис лишається ЛИШЕ у fullscreen-модалці
+   (GalleryModal, JS без змін — той самий data-caption). */
 .gallery {
   border-top: 1px solid var(--line-on-dark-soft);
 }
 
-.gallery__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+.gallery__rail {
+  scroll-snap-type: x proximity;
 }
 
-@media (min-width: 768px) {
-  .gallery__grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Картка — нормальний потік (фото блоком зверху, підпис ПІД ним як
-   звичайний UI-текст), НЕ текст-оверлей поверх зображення — пряма вимога
-   власника ("важливо там не було підписів, як наразі є"). Той самий
-   принцип, що вже застосований до .rail__card (DiscographyRail). */
+/* Картка — фіксована висота (clamp, компактно на будь-якому viewport),
+   ширина обчислюється з aspect-ratio 3:4 (реальна пропорція фото
+   900×1200) — не текст, не підпис, лише саме зображення. object-fit:
+   cover безпечний, бо контейнер уже сам має задану пропорцію (не
+   покладається на height:auto+aspect-ratio ланцюжок на <img>, який і
+   спричинив регрес обрізання в DiscographyRail/Featured — тут aspect-ratio
+   на КОНТЕЙНЕРІ, а img просто заповнює 100%/100% уже готового боксу). */
 .gallery__tile {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  height: clamp(220px, 30vw, 380px);
+  aspect-ratio: 3 / 4;
   position: relative;
   border: none;
+  padding: 0;
   border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--ink-800);
-  text-align: left;
-  color: var(--paper-50);
-  display: flex;
-  flex-direction: column;
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.gallery__tile-caption {
-  position: relative;
-  z-index: 1;
-  font-weight: 700;
-  font-size: 13px;
-  padding: 10px 12px;
-}
-
-.gallery__tile img {
+.gallery__cover {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  height: 100%;
   object-fit: cover;
-  background: var(--ink-800);
   transition: transform 700ms var(--ease-ui);
 }
 
 .gallery__tile:hover,
 .gallery__tile:focus-visible {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
 }
 
-.gallery__tile:hover img,
-.gallery__tile:focus-visible img {
-  transform: scale(1.05);
+.gallery__tile:hover .gallery__cover,
+.gallery__tile:focus-visible .gallery__cover {
+  transform: scale(1.06);
 }
 
 /* ===== БЛОК: FOLLOW ===== */
