@@ -157,24 +157,6 @@ h3 {
   border-top: 1px solid var(--line-on-dark-soft);
 }
 
-/* Наскрізний космічний акцент (запит власника: секції нижче hero
-   "випадають" з візуальної мови) — тонка comet-лінія по центру верхньої
-   межі кожної секції, у фірмовому signal-red, той самий колір, що
-   .eyebrow і orbit-кільце hero. Одна декларація на весь сайт (DRY) —
-   послідовна мова, не окремий ефект під кожну секцію. */
-.section::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  width: min(460px, 60%);
-  height: 1px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, var(--signal-red) 50%, transparent);
-  opacity: 0.45;
-  pointer-events: none;
-}
-
 .section__head {
   max-width: 62ch;
   margin-bottom: 48px;
@@ -228,49 +210,6 @@ h3 {
 
 .signal-red\:focus:focus-visible {
   outline-color: var(--signal-red);
-}
-
-/* ===== БЛОК: COSMIC FIELD (наскрізний фон) =====
-   Один фіксований шар на весь viewport, позаду ВСЬОГО контенту сайту
-   (не per-секція) — за прямим запитом власника: hero виглядає космічно,
-   секції нижче "випадають" з тієї самої мови. Дешевше й простіше за
-   canvas на кожну секцію: один елемент, один resize-listener, малий
-   canvas (viewport, не document height, бо position:fixed — не рухається
-   разом зі скролом, немає потреби покривати всю висоту сторінки).
-   Свідомо БЕЗ негативного z-index (крихкіше й менш передбачувано між
-   різними рушіями, коли елемент — прямий нащадок <body> без власного
-   stacking-контексту-предка) — натомість z-index:0 тут + #main/
-   .site-footer явно піднято на z-index:1 (власний stacking-контекст,
-   position:relative) нижче. Однозначний, наочний стек: cosmic-field(0)
-   < контент(1) < header/social-rail/back-to-top(55+) < модалки(80+). */
-.cosmic-field {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  /* Той самий колірний рецепт, що .hero__field (signal-red/ember
-     nebula-сяйво по кутах), у рази слабший (0.07–0.10 проти 0.14–0.22
-     у hero) — ambient-присутність, не повторення hero-ефекту. */
-  background: radial-gradient(55% 45% at 88% 4%, rgba(250, 59, 53, 0.13), transparent 62%),
-    radial-gradient(50% 40% at 4% 96%, rgba(255, 116, 38, 0.1), transparent 62%),
-    var(--ink-950);
-}
-
-.cosmic-field canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* Явний stacking-контекст для всього контенту сторінки (hero + всі
-   секції всередині <main>) — однозначно вище .cosmic-field (z-index:0),
-   без покладання на "z-index:auto теж вважається 0-рівнем" нюанси
-   painting order. */
-#main {
-  position: relative;
-  z-index: 1;
 }
 
 /* Grain overlay, reused */
@@ -2185,25 +2124,10 @@ h3 {
   border-top: 1px solid var(--line-on-dark-soft);
   padding-block: calc(var(--section-space) * 0.6) 32px;
   position: relative;
-  z-index: 1;
   overflow: hidden;
 }
 
-/* Той самий прийом, що .next-show__hero::before — тихий red/ember
-   horizon-glow знизу, замикає космічну мову сторінки на останньому екрані
-   (той самий колірний акцент, що hero__field, лише значно слабший). */
-.site-footer::before {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 55%;
-  background: radial-gradient(65% 100% at 50% 100%, rgba(250, 59, 53, 0.1), transparent 70%);
-  pointer-events: none;
-}
-
 .site-footer .container {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

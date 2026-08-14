@@ -123,24 +123,6 @@
 </head>
 <body>
 
-<!-- ===== БЛОК: COSMIC FIELD (наскрізний фон) =====
-     Один фіксований (position:fixed, весь viewport) шар позаду ВСЬОГО
-     контенту сайту — не окремий canvas/ефект на кожну секцію (дорого й
-     візуально шумно), а один тонкий наскрізний фоновий шар: слабка
-     nebula (CSS radial-gradient, той самий колірний рецепт, що
-     .hero__field, але в рази слабший) + розріджений canvas-starfield
-     (script.js, initCosmicField — той самий підхід, що hero__stars,
-     менше зірок). Секції нижче hero не задають власний opaque
-     background (лише border-top), тож цей шар "просвічує" крізь усі
-     них — саме та наскрізна космічна мова, про яку власник казав, що
-     губиться за межами hero. z-index:-1, першим у DOM body, аби
-     гарантовано малювався позаду звичайного in-flow контенту (CSS
-     painting order: негативний z-index малюється до non-positioned
-     descendants). aria-hidden — суто декоративний шар. -->
-<div class="cosmic-field" aria-hidden="true">
-  <canvas id="cosmicStars"></canvas>
-</div>
-
 <a class="skip-link" href="#main">Перейти до основного вмісту</a>
 
 <!-- ===== БЛОК: ІНТРО =====
