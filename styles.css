@@ -610,17 +610,18 @@ h3 {
 }
 
 @media (min-width: 1024px) {
-  /* Власник уточнив точну структуру (не накладення шарів, а чистий
-     вертикальний стек, усе по центру viewport): 1) фото — велике,
-     домінантне, зверху; 2) wordmark — під фото; 3) кнопки — під wordmark,
-     центровані відносно нього. Уся група центрується як одне ціле і
-     горизонтально, і вертикально в межах hero. Портрет виходить з
-     position:absolute (full-bleed фон) і стає звичайним flow-елементом —
-     тим самим першим flex-дочірнім .hero, тому природно опиняється НАД
-     .container (wordmark+кнопки) без додаткового z-index/order. */
+  /* Четвертий раунд (анотований скріншот, gaps.md розділ 18): фото — значно
+     більше й домінантніше, уся група підіймається трохи вище в межах hero,
+     wordmark тепер НАКЛАДАЄТЬСЯ на нижню частину фото (не окремий блок
+     з відступом) — негативний margin у .hero__portrait підтягує .container
+     вгору, в зону нижньої третини зображення (обличчя/груди зверху лишаються
+     чистими). .hero .container отримує явний z-index, щоб гарантовано
+     малюватись НАД портретом при накладенні (не покладаємось на порядок
+     пофарбування DOM, коли елементи фізично перекриваються). */
   .hero {
     justify-content: center;
     align-items: center;
+    padding-bottom: 112px;
   }
 
   .hero__portrait {
@@ -633,12 +634,12 @@ h3 {
     z-index: 0;
     display: flex;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: -15vh;
   }
 
   .hero__portrait img {
-    width: clamp(340px, 34vw, 580px);
-    max-height: 46vh;
+    width: clamp(480px, 52vw, 860px);
+    max-height: 62vh;
     /* М'якший fade лише по самому нижньому краю — фото тепер самостійний
        домінантний блок, а не фон під текстом, тож не має розчинятись
        так сильно, як у попередній layered-версії. */
@@ -646,8 +647,19 @@ h3 {
     mask-image: linear-gradient(to bottom, black 82%, transparent 99%);
   }
 
+  .hero .container {
+    position: relative;
+    z-index: 1;
+  }
+
   .hero__wordmark {
     margin-inline: auto;
+  }
+
+  .hero__wordmark img {
+    /* Wordmark лежить поверх нижньої частини фото — потрібна тінь для
+       контрасту незалежно від того, що саме на фото під текстом. */
+    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.7)) drop-shadow(0 1px 6px rgba(0, 0, 0, 0.85));
   }
 
   .hero__actions {
@@ -758,13 +770,16 @@ h3 {
   text-transform: uppercase;
 }
 
-/* Власник: зсунути "Гортайте" правіше від самого лівого краю сторінки —
-   ближче до зони під центрованим блоком wordmark/кнопок, не впритул до
-   краю viewport. Тільки desktop — новий вертикальний стек hero тепер сам
-   по собі центрований, скролкью орієнтується на цю ж вісь. */
+/* Власник (анотований скріншот, gaps.md розділ 18): "Гортайте" строго по
+   горизонтальному центру viewport, як низ нового вертикального стека hero
+   (велике фото → wordmark-overlay → кнопки → сюди). Попередня версія
+   (`calc(50% - 280px)`, зсув лівіше центру) замінена на точне центрування
+   самого елемента (текст+риска разом, через translateX на власній ширині,
+   не фіксований px-офсет). Тільки desktop. */
 @media (min-width: 1024px) {
   .hero__scrollcue {
-    left: calc(50% - 280px);
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
@@ -1226,6 +1241,16 @@ h3 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--signal-red);
+}
+
+/* Статус зміни дати (brief §7.3: "не маскувати статус... Перенесено") —
+   візуально відрізняється від "найближчий у продажу" (не той самий red
+   accent, щоб дві різні за змістом позначки не читались як однакові). */
+.tour-tag--rescheduled {
+  color: var(--ember-500);
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 116, 38, 0.4);
+  border-radius: var(--radius-pill);
 }
 
 .tour-list .tour-arrow {
