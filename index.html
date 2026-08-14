@@ -253,7 +253,12 @@
     <canvas class="hero__stars" id="heroStars" aria-hidden="true"></canvas>
     <svg class="hero__orbit" viewBox="0 0 400 400" aria-hidden="true">
       <circle cx="200" cy="200" r="176"></circle>
-      <path d="M 376 200 A 176 176 0 0 1 200 376"></path>
+      <!-- .hero__orbit-spin обертає лише червоний сегмент нескінченно по колу
+           (CSS transform:rotate, keyframes heroOrbitSpin) — сіре коло-трек
+           лишається нерухомим, бо симетричне й рух непомітний. -->
+      <g class="hero__orbit-spin">
+        <path d="M 376 200 A 176 176 0 0 1 200 376"></path>
+      </g>
     </svg>
 
     <!-- Портрет: source-assets/hero-photo.png, джерело підтверджено офіційною

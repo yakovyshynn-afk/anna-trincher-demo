@@ -812,6 +812,26 @@ h3 {
   }
 }
 
+/* Червоний сегмент вічно обертається по колу після того, як домальована
+   (orbitTrace) — GPU-дешевий transform:rotate на <g>-обгортці (не
+   stroke-dashoffset у циклі: коло симетричне, тож 360°→0° не дає
+   помітного стрибка/скидання, ідеально безшовний луп). Старт — одразу
+   після завершення reveal (400ms delay + 2.2s = 2.6s), 18s/оберт —
+   фоновий атмосферний рух, не привертає основну увагу. */
+.hero__orbit-spin {
+  transform-origin: 200px 200px;
+}
+
+.hero.is-in .hero__orbit-spin {
+  animation: heroOrbitSpin 18s linear 2.6s infinite;
+}
+
+@keyframes heroOrbitSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .hero__wordmark {
   display: block;
   width: clamp(260px, 58vw, 760px);
@@ -2524,6 +2544,10 @@ h3 {
   .hero__orbit path {
     animation: none !important;
     stroke-dashoffset: 0;
+  }
+  .hero__orbit-spin {
+    animation: none !important;
+    transform: none !important;
   }
   .next-show__status::before {
     animation: none !important;
