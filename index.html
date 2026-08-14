@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Анна Трінчер — офіційний сайт</title>
+<meta name="description" content="Музика, кліпи, концерти та новини Анни Трінчер. Слухайте нові релізи й знаходьте квитки на найближчі виступи.">
+<link rel="canonical" href="https://example.com/anna-trincher/">
+
+<!-- Favicon -->
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" href="assets/favicon-512.png">
+<meta name="theme-color" content="#08090B">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:site_name" content="Анна Трінчер">
+<meta property="og:title" content="Анна Трінчер — офіційний сайт">
+<meta property="og:description" content="Музика, кліпи, концерти та новини Анни Трінчер. Слухайте нові релізи й знаходьте квитки на найближчі виступи.">
+<meta property="og:image" content="https://example.com/anna-trincher/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://example.com/anna-trincher/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Анна Трінчер — офіційний сайт">
+<meta name="twitter:description" content="Музика, кліпи, концерти та новини Анни Трінчер.">
+<meta name="twitter:image" content="https://example.com/anna-trincher/assets/og-image.jpg">
+<!-- og:image складено з source-assets/hero-photo.png — джерело підтверджено
+     офіційною сторінкою квитків Karabas (kyiv.karabas.com/anna-trincher-65/,
+     джерело [6] brief-manus.md): той самий костюм/шолом/поза на офіційному
+     event-постері концерту 20.11.2026, Палац спорту. Деталі — gaps.md розділ 1. -->
+
+<!-- Fonts: Unbounded (wordmark, за прямою вимогою brief-manus.md §8.2) + Manrope (текст/UI).
+     Wordmark у 900-му накресленні + зрізані кути (clip-path у styles.css) — стилістичний
+     напрям "гострі/зрізані кутові форми" від власника, БЕЗ трасування конкретних гліфів
+     жодного зовнішнього афішного шрифту (brief-manus.md §23.4 забороняє копіювати чужу
+     типографіку/композицію — тут це власний бренд Анни, тому напрям, а не копія). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+
+<!-- Schema.org: MusicGroup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "name": "Анна Трінчер",
+  "url": "https://example.com/anna-trincher/",
+  "image": "https://example.com/anna-trincher/assets/og-image.jpg",
+  "sameAs": [
+    "https://www.youtube.com/@annatrincher",
+    "https://music.apple.com/ua/artist/анна-трінчер/1436704585"
+  ]
+}
+</script>
+<!-- Schema.org: featured-подія на homepage (Київ, Палац спорту — фінал туру) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "Анна Трінчер у Київському Палаці спорту",
+  "startDate": "2026-11-20T19:00:00+02:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": {
+    "@type": "Place",
+    "name": "Київський Палац спорту",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Київ",
+      "addressCountry": "UA"
+    }
+  },
+  "performer": {
+    "@type": "MusicGroup",
+    "name": "Анна Трінчер"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://kyiv.karabas.com/anna-trincher-65/",
+    "priceCurrency": "UAH",
+    "lowPrice": "690",
+    "highPrice": "4990",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2026-08-14"
+  }
+}
+</script>
+<!-- Schema.org: найближчий за датою підтверджений концерт (лишається в списку дат) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "Анна Трінчер у Шептицькому",
+  "startDate": "2026-08-28T20:00:00+03:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": {
+    "@type": "Place",
+    "name": "Акула Мама",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Шептицький",
+      "addressCountry": "UA"
+    }
+  },
+  "performer": {
+    "@type": "MusicGroup",
+    "name": "Анна Трінчер"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://sheptytskyi.karabas.com/anna-trincher-63/",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2026-08-14"
+  }
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Перейти до основного вмісту</a>
+
+<!-- ===== БЛОК: ІНТРО ===== -->
+<div id="intro" class="intro" aria-hidden="false">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="intro__stage">
+    <span class="intro__word intro__word--1">АННА</span>
+    <svg class="intro__trace" viewBox="0 0 420 6" aria-hidden="true"><path d="M0 3 H420"></path></svg>
+    <span class="intro__word intro__word--2">ТРІНЧЕР</span>
+  </div>
+  <button type="button" class="intro__skip" id="introSkip">Пропустити вступ</button>
+</div>
+
+<!-- ===== БЛОК: ХЕДЕР ===== -->
+<header class="site-header" id="siteHeader">
+  <div class="container site-header__inner">
+    <a href="#hero" class="site-header__mark" aria-label="Анна Трінчер — на початок сторінки">AT</a>
+    <nav class="site-header__nav" aria-label="Основна навігація">
+      <a href="#featured-release">Музика</a>
+      <a href="#next-show">Концерти</a>
+      <a href="#video">Кліпи</a>
+      <a href="#story">Історія</a>
+      <a href="#gallery">Галерея</a>
+      <a href="#contact">Контакти</a>
+    </nav>
+    <a class="site-header__cta" href="#next-show">Квитки</a>
+    <button class="site-header__burger" id="menuToggle" type="button" aria-expanded="false" aria-controls="mobileMenu">Меню</button>
+  </div>
+</header>
+
+<!-- ===== БЛОК: МОБІЛЬНЕ МЕНЮ ===== -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <button class="mobile-menu__close" id="menuClose" type="button">Закрити</button>
+  <nav aria-label="Мобільна навігація">
+    <a href="#featured-release">Музика</a>
+    <a href="#next-show">Концерти</a>
+    <a href="#video">Кліпи</a>
+    <a href="#story">Історія</a>
+    <a href="#gallery">Галерея</a>
+    <a href="#follow">Стежити</a>
+    <a href="#contact">Контакти</a>
+  </nav>
+  <a class="mobile-menu__ticket" href="#next-show">Придбати квитки</a>
+</div>
+
+<main id="main">
+
+  <!-- ===== БЛОК: HERO ===== -->
+  <section class="hero" id="hero">
+    <div class="hero__field" aria-hidden="true"></div>
+    <svg class="hero__orbit" viewBox="0 0 400 400" aria-hidden="true">
+      <circle cx="200" cy="200" r="176"></circle>
+      <path d="M 376 200 A 176 176 0 0 1 200 376"></path>
+    </svg>
+
+    <!-- Портрет: source-assets/hero-photo.png, джерело підтверджено офіційною
+         сторінкою квитків Karabas (kyiv.karabas.com/anna-trincher-65/) — той
+         самий костюм/шолом/поза на офіційному постері Палацу спорту. Деталі
+         верифікації — gaps.md розділ 1. -->
+    <picture class="hero__portrait">
+      <source media="(max-width: 639px)" srcset="assets/hero-portrait-mobile.webp">
+      <img src="assets/hero-portrait.webp" alt="Анна Трінчер у сценічному космічному образі — срібний костюм і шолом, кадр з афіші туру «Зірочка. Палац»" width="1384" height="1400" fetchpriority="high">
+    </picture>
+
+    <div class="container">
+      <!-- Реальний напис з афіші Палацу спорту (source-assets/wordmark-font-reference.jpg),
+           вирізаний і перефарбований у paper-50 — не Unbounded-апроксимація. -->
+      <h1 class="hero__wordmark">
+        <span class="hero__wordmark-inner">
+          <img src="assets/wordmark-real.png" alt="Анна Трінчер" width="864" height="239">
+        </span>
+      </h1>
+      <p class="hero__descriptor">співачка&nbsp;/ акторка&nbsp;/ виконавиця</p>
+
+      <div class="hero__actions">
+        <button type="button" class="btn btn--primary" data-open-sheet aria-haspopup="dialog">
+          <span class="btn__fill" aria-hidden="true"></span>
+          <span class="btn__label">Слухати</span>
+        </button>
+        <a class="btn btn--ghost" href="#next-show">
+          <span class="btn__fill" aria-hidden="true"></span>
+          <span class="btn__label">Концерти</span>
+        </a>
+        <p class="hero__hint">Оберіть&nbsp;платформу для&nbsp;відтворення.</p>
+      </div>
+    </div>
+
+    <a href="#featured-release" class="hero__scrollcue">Гортайте</a>
+
+    <div class="hero__social" aria-label="Офіційні канали Анни Трінчер">
+      <a href="https://www.instagram.com/annatrincher_official" target="_blank" rel="noopener noreferrer" aria-label="Відкрити Instagram Анни Трінчер">IG</a>
+      <a href="https://www.tiktok.com/@annatrincher" target="_blank" rel="noopener noreferrer" aria-label="Відкрити TikTok Анни Трінчер">TT</a>
+      <a href="https://www.youtube.com/@annatrincher" target="_blank" rel="noopener noreferrer" aria-label="Відкрити YouTube-канал Анни Трінчер">YT</a>
+      <a href="https://music.apple.com/ua/artist/анна-трінчер/1436704585" target="_blank" rel="noopener noreferrer" aria-label="Відкрити сторінку Анни Трінчер на Apple Music">AM</a>
+      <a href="https://karabas.com/tag=anna-trincher/" target="_blank" rel="noopener noreferrer" aria-label="Відкрити всі концерти на Karabas">KB</a>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: FEATURED RELEASE ===== -->
+  <section class="section featured" id="featured-release">
+    <div class="container">
+      <div class="featured__grid">
+        <div class="featured__card reveal">
+          <p class="featured__title">Маргарита</p>
+          <p class="featured__meta">Останній реліз&nbsp;— 15&nbsp;липня 2026</p>
+        </div>
+
+        <div class="featured__body reveal" style="--d:120ms">
+          <p class="eyebrow">Новий реліз</p>
+          <p class="lede">Найновіший трек Анни Трінчер, представлений 15&nbsp;липня 2026&nbsp;року та доступний на&nbsp;офіційних музичних платформах.</p>
+          <div class="featured__actions">
+            <a class="btn btn--primary" href="https://music.apple.com/ua/artist/анна-трінчер/1436704585" target="_blank" rel="noopener noreferrer">
+              <span class="btn__fill" aria-hidden="true"></span>
+              <span class="btn__label">Слухати на Apple Music</span>
+            </a>
+            <button type="button" class="btn btn--ghost" data-open-video data-video-id="gAXU1Bvxngg" data-video-title="Маргарита">
+              <span class="btn__fill" aria-hidden="true"></span>
+              <span class="btn__label">Дивитися кліп</span>
+            </button>
+          </div>
+          <p class="featured__hint">Посилання відкриються на&nbsp;офіційних платформах.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: NEXT SHOW =====
+       Featured — Київ, Палац спорту, 20.11.2026: свідомо не "найближча за датою"
+       подія (найближча — 28.08 Шептицький, вона тегована нижче у списку й нікуди
+       не зникла), а фінальна й найбільша дата туру (обидва факти перевірні: останній
+       рядок таблиці 2.3 брифу + Karabas kyiv.karabas.com/anna-trincher-65/, звірено
+       напряму цієї сесії). Тому eyebrow і статус НЕ кажуть "найближчий" — це було б
+       невірним твердженням. -->
+  <section class="section next-show" id="next-show">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Головна сцена туру</p>
+      </div>
+
+      <div class="next-show__hero">
+        <p class="next-show__status">У продажу · фінал туру</p>
+        <p class="next-show__date"><span>20.11.2026</span></p>
+        <p class="next-show__place"><strong>Київ, Україна</strong> — Київський Палац спорту, 19:00</p>
+        <div class="next-show__actions">
+          <a class="btn btn--ticket" href="https://kyiv.karabas.com/anna-trincher-65/" target="_blank" rel="noopener noreferrer">
+            <span class="btn__fill" aria-hidden="true"></span>
+            <span class="btn__label">Придбати квитки</span>
+          </a>
+          <p class="next-show__price">Квитки 690–4990&nbsp;грн</p>
+          <p class="next-show__hint">Найбільша зала маршруту й завершальний виступ туру. Квитки відкриються на&nbsp;сайті партнера.</p>
+        </div>
+      </div>
+
+      <div class="next-show__more reveal">
+        <h3>Усі дати туру</h3>
+        <ul class="tour-list">
+          <li>
+            <a href="https://sheptytskyi.karabas.com/anna-trincher-63/" target="_blank" rel="noopener noreferrer">
+              <span class="tour-date">28.08.2026</span>
+              <span class="tour-city">Шептицький, «Акула Мама» <em class="tour-tag">найближчий у продажу</em></span>
+              <span class="tour-arrow">Квитки</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://vinnytsia.karabas.com/anna-trincher-street-fest-ua-3/" target="_blank" rel="noopener noreferrer">
+              <span class="tour-date">04.09.2026</span>
+              <span class="tour-city">Вінниця, Park «Open AIR»</span>
+              <span class="tour-arrow">Квитки</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://london.karabas.com/anna-trincher-anna-trincher-4/" target="_blank" rel="noopener noreferrer">
+              <span class="tour-date">18.09.2026</span>
+              <span class="tour-city">Лондон, Studio 338</span>
+              <span class="tour-arrow">Квитки</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://lviv.karabas.com/anna-trincher-69/" target="_blank" rel="noopener noreferrer">
+              <span class="tour-date">16.10.2026</span>
+              <span class="tour-city">Львів, Malevich Concert Arena</span>
+              <span class="tour-arrow">Квитки</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://cherkasy.karabas.com/anna-trincher-70/" target="_blank" rel="noopener noreferrer">
+              <span class="tour-date">19.10.2026</span>
+              <span class="tour-city">Черкаси, ПК «Дружба народів»</span>
+              <span class="tour-arrow">Квитки</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://karabas.com/tag=anna-trincher/" target="_blank" rel="noopener noreferrer">
+              <span class="tour-date">&nbsp;</span>
+              <span class="tour-city">Усі 12&nbsp;дат туру на&nbsp;Karabas</span>
+              <span class="tour-arrow">Переглянути</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: DISCOGRAPHY RAIL ===== -->
+  <section class="section discography" id="discography">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Дискографія</p>
+        <h2>Треки й&nbsp;релізи</h2>
+      </div>
+
+      <div class="rail reveal" role="list" aria-label="Дискографія Анни Трінчер, у хронологічному порядку релізу">
+        <!-- Хронологічний порядок за датами розділу 2.2 брифу (найстаріший → найновіший,
+             «Маргарита» останньою як featured-реліз). Обкладинки — офіційні Apple Music
+             cover art (mzstatic CDN, звірено вручну по кожному треку, gaps.md розділ 2).
+             «Слухати» відкриває StreamingSheet із назвою саме цього треку; «Кліп»
+             відкриває VideoModal саме з цим відео (усі 10 YouTube ID звірені вручну
+             напряму на youtube.com, gaps.md розділ 4). -->
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/koloski.webp" alt="Обкладинка синглу «Колоски», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2023</p><p class="rail__title">Колоски</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Колоски">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="yKmE2MHGjG8" data-video-title="Колоски">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/ochi.webp" alt="Обкладинка синглу «Очі», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2023</p><p class="rail__title">Очі</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Очі">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/bar-za-barom.webp" alt="Обкладинка синглу «Бар за баром», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2024</p><p class="rail__title">Бар за баром</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Бар за баром">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/tresh.webp" alt="Обкладинка синглу «Треш», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2024</p><p class="rail__title">Треш</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Треш">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/zirochka-palay.webp" alt="Обкладинка синглу «Зірочка палай», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">Зірочка палай</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Зірочка палай">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/pivonii.webp" alt="Обкладинка синглу «Півонії», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">Півонії</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Півонії">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/no-cocaina.webp" alt="Обкладинка синглу «No cocaina», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">No cocaina</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="No cocaina">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/vynom-tekla.webp" alt="Обкладинка синглу «Вином текла», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">Вином текла</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Вином текла">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/tvoya-mama.webp" alt="Обкладинка синглу «Твоя мама», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2026</p><p class="rail__title">Твоя мама</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Твоя мама">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама">Кліп</button>
+          </div>
+        </article>
+        <article class="rail__card" role="listitem">
+          <img class="rail__cover" src="assets/covers/margaryta.webp" alt="Обкладинка синглу «Маргарита», Анна Трінчер" loading="lazy" width="420" height="420">
+          <div class="rail__info"><p class="rail__year">2026</p><p class="rail__title">Маргарита</p></div>
+          <div class="rail__actions">
+            <button type="button" class="rail__link" data-open-sheet data-track="Маргарита">Слухати</button>
+            <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="gAXU1Bvxngg" data-video-title="Маргарита">Кліп</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: VIDEO ===== -->
+  <section class="section video" id="video">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Кліпи</p>
+        <h2>Дивіться Анну в&nbsp;русі</h2>
+      </div>
+
+      <!-- Постери — офіційні YouTube-thumbnails (i.ytimg.com/vi/{ID}/maxresdefault.jpg),
+           video ID звірені вручну напряму на youtube.com (gaps.md розділ 4). Клік відкриває
+           VideoModal (youtube-nocookie iframe, лише після кліку — script.js). -->
+      <button type="button" class="video__featured reveal" data-open-video data-video-id="gAXU1Bvxngg" data-video-title="Маргарита" aria-label="Дивитися офіційний кліп «Маргарита»">
+        <img class="video__poster" src="https://i.ytimg.com/vi/gAXU1Bvxngg/maxresdefault.jpg" alt="" loading="lazy">
+        <span class="video__play" aria-hidden="true"></span>
+        <span class="video__meta">
+          <span class="video__title">Маргарита</span>
+          <span class="video__sub">Офіційний кліп на&nbsp;YouTube-каналі</span>
+        </span>
+      </button>
+
+      <!-- Хронологічний порядок (найстаріший → найновіший, «Маргарита» — окремо featured вище). -->
+      <div class="video__rail reveal" style="--d:120ms">
+        <button type="button" class="video__card" data-open-video data-video-id="yKmE2MHGjG8" data-video-title="Колоски" aria-label="Дивитися кліп «Колоски»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" alt="" loading="lazy"><span>Колоски</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай" aria-label="Дивитися кліп «Зірочка палай»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" alt="" loading="lazy"><span>Зірочка палай</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії" aria-label="Дивитися кліп «Півонії»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" alt="" loading="lazy"><span>Півонії</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina" aria-label="Дивитися кліп «No cocaina»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" alt="" loading="lazy"><span>No cocaina</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама" aria-label="Дивитися кліп «Твоя мама»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" alt="" loading="lazy"><span>Твоя мама</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром" aria-label="Дивитися кліп «Бар за баром»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/eazVVV0-YWk/maxresdefault.jpg" alt="" loading="lazy"><span>Бар за баром</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла" aria-label="Дивитися кліп «Вином текла»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/D1l6Wp2pP_8/maxresdefault.jpg" alt="" loading="lazy"><span>Вином текла</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі" aria-label="Дивитися кліп «Очі»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/Dksj1wxC7rg/maxresdefault.jpg" alt="" loading="lazy"><span>Очі</span>
+        </button>
+        <button type="button" class="video__card" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш" aria-label="Дивитися кліп «Треш»">
+          <img class="video__card-poster" src="https://i.ytimg.com/vi/a8zgbf9cLEY/maxresdefault.jpg" alt="" loading="lazy"><span>Треш</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: STORY INTERLUDE ===== -->
+  <section class="section story" id="story">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Історія</p>
+        <h2>Голос, екран,&nbsp;сцена</h2>
+      </div>
+
+      <!-- Фото — офіційні YouTube-постери відповідних відео (не окремі завантажені
+           фотографії): Дитяче Євробачення й "Голос країни" з офіційних трансляційних
+           каналів, "Школа" — найближчий офіційний матеріал з каналу Анни (не архівний
+           кадр самого серіалу — деталі gaps.md розділ 5), "Музика" — офіційна
+           обкладинка "Маргарита". -->
+      <div class="story__list">
+        <div class="story__item reveal">
+          <img class="story__photo" src="https://i.ytimg.com/vi/B8zbOL9t_VA/maxresdefault.jpg" alt="Анна Трінчер на сцені Дитячого Євробачення 2015, кадр офіційної трансляції Junior Eurovision Song Contest" loading="lazy">
+          <div>
+            <p class="story__year">2015</p>
+            <h3>Дитяче Євробачення</h3>
+            <p>Анна Трінчер представляла Україну на&nbsp;пісенному конкурсі Дитяче Євробачення.</p>
+          </div>
+        </div>
+        <div class="story__item reveal" style="--d:80ms">
+          <img class="story__photo" src="https://i.ytimg.com/vi/nQBFxiLVXx4/maxresdefault.jpg" alt="Анна Трінчер на сліпих прослуховуваннях шоу «Голос країни», кадр офіційного каналу «Голос країни»" loading="lazy">
+          <div>
+            <p class="story__year">Талант-шоу</p>
+            <h3>Голос. Діти та&nbsp;Голос країни</h3>
+            <p>Анна брала участь у&nbsp;проєкті «Голос. Діти», а&nbsp;згодом дійшла до&nbsp;суперфіналу шоу «Голос країни».</p>
+          </div>
+        </div>
+        <div class="story__item reveal" style="--d:160ms">
+          <img class="story__photo" src="https://i.ytimg.com/vi/dCyUFO7cyT4/maxresdefault.jpg" alt="Анна Трінчер, офіційний кадр з каналу артистки, тематично пов'язаний із «Школа»" loading="lazy">
+          <div>
+            <p class="story__year">Екран</p>
+            <h3>Роль у&nbsp;серіалі «Школа»</h3>
+            <p>Анна Трінчер знялася в&nbsp;однієї з&nbsp;головних ролей серіалу «Школа».</p>
+          </div>
+        </div>
+        <div class="story__item reveal" style="--d:240ms">
+          <img class="story__photo" src="assets/covers/margaryta.webp" alt="Обкладинка синглу «Маргарита», Анна Трінчер" loading="lazy">
+          <div>
+            <p class="story__year">Зараз</p>
+            <h3>Музика сьогодні</h3>
+            <p>Анна активно випускає музику: серед останніх релізів&nbsp;— «Маргарита», представлена 15&nbsp;липня 2026&nbsp;року.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: EDITORIAL GALLERY (типографічні акценти — без фото Анни, gaps.md) ===== -->
+  <section class="section gallery" id="gallery">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Візуальні епохи</p>
+        <h2>Галерея</h2>
+      </div>
+
+      <div class="gallery__grid reveal">
+        <button type="button" class="gallery__tile" data-swatch="swatch--1" data-caption="Маргарита — 2026">
+          <span class="swatch swatch--1" aria-hidden="true"></span>
+          <span>Маргарита — 2026</span>
+        </button>
+        <button type="button" class="gallery__tile" data-swatch="swatch--2" data-caption="Зірочка палай — 2025">
+          <span class="swatch swatch--2" aria-hidden="true"></span>
+          <span>Зірочка палай — 2025</span>
+        </button>
+        <button type="button" class="gallery__tile" data-swatch="swatch--3" data-caption="No cocaina — 2025">
+          <span class="swatch swatch--3" aria-hidden="true"></span>
+          <span>No cocaina — 2025</span>
+        </button>
+        <button type="button" class="gallery__tile" data-swatch="swatch--4" data-caption="Твоя мама — 2026">
+          <span class="swatch swatch--4" aria-hidden="true"></span>
+          <span>Твоя мама — 2026</span>
+        </button>
+        <button type="button" class="gallery__tile" data-swatch="swatch--5" data-caption="Півонії — 2025">
+          <span class="swatch swatch--5" aria-hidden="true"></span>
+          <span>Півонії — 2025</span>
+        </button>
+        <button type="button" class="gallery__tile" data-swatch="swatch--6" data-caption="Колоски — 2023">
+          <span class="swatch swatch--6" aria-hidden="true"></span>
+          <span>Колоски — 2023</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: FOLLOW ANNA ===== -->
+  <section class="section follow" id="follow">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Стежте за Анною</p>
+        <h2>На&nbsp;звʼязку</h2>
+      </div>
+
+      <div class="follow__grid reveal">
+        <a class="follow__card" href="https://www.instagram.com/annatrincher_official" target="_blank" rel="noopener noreferrer">
+          <span class="follow__name">Instagram</span>
+          <span class="follow__desc">Сторіз, бекстейдж і анонси</span>
+        </a>
+        <a class="follow__card" href="https://www.tiktok.com/@annatrincher" target="_blank" rel="noopener noreferrer">
+          <span class="follow__name">TikTok</span>
+          <span class="follow__desc">Короткі відео та рілси</span>
+        </a>
+        <a class="follow__card" href="https://www.youtube.com/@annatrincher" target="_blank" rel="noopener noreferrer">
+          <span class="follow__name">YouTube</span>
+          <span class="follow__desc">Офіційний канал — кліпи та відео</span>
+        </a>
+        <a class="follow__card" href="https://music.apple.com/ua/artist/анна-трінчер/1436704585" target="_blank" rel="noopener noreferrer">
+          <span class="follow__name">Apple Music</span>
+          <span class="follow__desc">Усі релізи артистки</span>
+        </a>
+        <a class="follow__card" href="https://karabas.com/tag=anna-trincher/" target="_blank" rel="noopener noreferrer">
+          <span class="follow__name">Karabas</span>
+          <span class="follow__desc">Усі концерти та квитки</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== БЛОК: КОНТАКТИ =====
+       Структура за розділом 7.4/14.2 брифу (/kontakt: Booking / Management / Press).
+       Обидва номери — first-party джерело: офіційне біо Instagram
+       (@annatrincher_official), перевірено напряму 2026-08-14, не вторинний
+       агентський профіль. Окремого контакту для Management/Press не знайдено —
+       свідомо не вигадано (gaps.md). -->
+  <section class="section contact" id="contact">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Контакти</p>
+        <h2>Букінг і&nbsp;зв'язок</h2>
+        <p class="lede">Концерти й реклама — напряму за&nbsp;номерами з&nbsp;офіційного біо Анни. З&nbsp;інших питань пишіть у&nbsp;соцмережі нижче.</p>
+      </div>
+
+      <div class="contact-list reveal">
+        <div class="contact-list__row">
+          <p class="contact-list__label">Концерти</p>
+          <p class="contact-list__desc">Ромен — <a href="tel:+380682749567">068&nbsp;274&nbsp;95&nbsp;67</a></p>
+        </div>
+        <div class="contact-list__row">
+          <p class="contact-list__label">Реклама</p>
+          <p class="contact-list__desc">Ірен — <a href="tel:+380987218937">+38&nbsp;098&nbsp;721&nbsp;89&nbsp;37</a></p>
+        </div>
+      </div>
+
+      <div class="contact__actions reveal">
+        <a class="btn btn--primary" href="tel:+380682749567">
+          <span class="btn__fill" aria-hidden="true"></span>
+          <span class="btn__label">Подзвонити щодо концерту</span>
+        </a>
+        <a class="btn btn--ghost" href="https://www.instagram.com/annatrincher_official" target="_blank" rel="noopener noreferrer">
+          <span class="btn__fill" aria-hidden="true"></span>
+          <span class="btn__label">Instagram</span>
+        </a>
+        <a class="btn btn--ghost" href="https://www.tiktok.com/@annatrincher" target="_blank" rel="noopener noreferrer">
+          <span class="btn__fill" aria-hidden="true"></span>
+          <span class="btn__label">TikTok</span>
+        </a>
+        <p class="contact__hint">Менеджмент і преса — там само, у соцмережах Анни.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== БЛОК: ФУТЕР ===== -->
+<footer class="site-footer">
+  <div class="container">
+    <img class="site-footer__mark" src="assets/wordmark-real.png" alt="Анна Трінчер" width="864" height="239" loading="lazy">
+    <p class="site-footer__tagline">Побачимося на&nbsp;іншому боці</p>
+
+    <nav class="site-footer__links" aria-label="Посилання у футері">
+      <a href="https://www.instagram.com/annatrincher_official" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://www.tiktok.com/@annatrincher" target="_blank" rel="noopener noreferrer">TikTok</a>
+      <a href="https://www.youtube.com/@annatrincher" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a href="https://music.apple.com/ua/artist/анна-трінчер/1436704585" target="_blank" rel="noopener noreferrer">Apple Music</a>
+      <a href="https://karabas.com/tag=anna-trincher/" target="_blank" rel="noopener noreferrer">Karabas</a>
+      <button type="button" data-copy-link="https://example.com/anna-trincher/">Скопіювати посилання</button>
+    </nav>
+
+    <div class="site-footer__legal">
+      <p>© 2026 Анна Трінчер</p>
+      <p>Дані про релізи та&nbsp;концерти актуальні станом на&nbsp;14&nbsp;серпня 2026&nbsp;року. Перевіряйте деталі на&nbsp;платформах-партнерах.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== БЛОК: PLATFORM SHEET ===== -->
+<div class="sheet-backdrop" id="platformSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet">
+    <div class="sheet__head">
+      <p class="sheet__title" id="sheetTitle">Слухати «Маргарита»</p>
+      <button type="button" class="sheet__close" id="sheetClose" aria-label="Закрити вікно">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1 L13 13 M13 1 L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="sheet__list">
+      <a href="https://music.apple.com/ua/artist/анна-трінчер/1436704585" target="_blank" rel="noopener noreferrer">Apple Music <small>Відкрити</small></a>
+      <a href="https://www.youtube.com/@annatrincher" target="_blank" rel="noopener noreferrer">YouTube <small>Відкрити</small></a>
+    </div>
+    <p class="sheet__note">Spotify з'явиться після підтвердження менеджментом.</p>
+  </div>
+</div>
+
+<!-- ===== БЛОК: GALLERY MODAL ===== -->
+<div class="gallery-modal" id="galleryModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Перегляд візуальної епохи">
+  <button type="button" class="gallery-modal__close" id="galleryModalClose" aria-label="Закрити перегляд">
+    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1 L13 13 M13 1 L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+  <button type="button" class="gallery-modal__nav gallery-modal__nav--prev" id="galleryModalPrev" aria-label="Попереднє зображення">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 2 L4 8 L10 14" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="gallery-modal__frame" id="galleryModalFrame"></div>
+  <button type="button" class="gallery-modal__nav gallery-modal__nav--next" id="galleryModalNext" aria-label="Наступне зображення">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2 L12 8 L6 14" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<!-- ===== БЛОК: VIDEO MODAL =====
+     youtube-nocookie iframe створюється лише після кліку (brief §7.2/§17), video ID
+     звірені вручну напряму на youtube.com (gaps.md розділ 4). -->
+<div class="video-modal" id="videoModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
+  <p class="visually-hidden" id="videoModalTitle">Перегляд кліпу</p>
+  <button type="button" class="video-modal__close" id="videoModalClose" aria-label="Закрити відео">
+    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1 L13 13 M13 1 L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+  <div class="video-modal__frame" id="videoModalFrame"></div>
+  <a class="video-modal__fallback" id="videoModalFallback" href="https://www.youtube.com/@annatrincher" target="_blank" rel="noopener noreferrer">Не вдалося завантажити відео. Відкрити на&nbsp;YouTube.</a>
+</div>
+
+<!-- ===== БЛОК: TOAST ===== -->
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

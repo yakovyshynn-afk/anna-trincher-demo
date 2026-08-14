@@ -1,0 +1,11 @@
+# Внутрішні робочі документи агенції — не для публічного репо
+brief-manus.md
+gaps.md
+state.md
+wordmark-notes.md
+qa-conversion.md
+qa-report.md
+source-assets/
+
+# OS
+.DS_Store
