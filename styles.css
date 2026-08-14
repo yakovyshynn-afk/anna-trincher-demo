@@ -240,59 +240,63 @@ h3 {
   padding-inline: 24px;
 }
 
-.intro__word {
+/* Реальний wordmark — той самий файл, що й у hero (assets/wordmark-real.png),
+   не окремий текстовий рядок іншим шрифтом (фідбек власника). Reveal —
+   clip-path wipe зліва направо поверх зображення + легкий glow/scale, а не
+   просто fade. */
+.intro__mark {
+  width: clamp(240px, 58vw, 640px);
+  margin: 0 auto;
+}
+
+.intro__mark img {
   display: block;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(2.6rem, 15vw, 7rem);
-  line-height: 0.86;
-  letter-spacing: -0.01em;
-  color: var(--paper-50);
-  opacity: 0;
-  filter: blur(14px);
-  transform: translateY(18px);
-  clip-path: inset(0 0 0 0);
+  width: 100%;
+  height: auto;
+  clip-path: inset(0 100% 0 0);
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 34px rgba(250, 59, 53, 0.4));
 }
 
-.intro.is-playing .intro__word--1 {
-  animation: introReveal 700ms var(--ease-out-expo) 150ms forwards;
+.intro.is-playing .intro__mark img {
+  animation: introMarkWipe 900ms var(--ease-out-expo) 120ms forwards;
 }
 
-.intro.is-playing .intro__word--2 {
-  animation: introReveal 700ms var(--ease-out-expo) 900ms forwards;
-}
-
-@keyframes introReveal {
+@keyframes introMarkWipe {
+  60% {
+    filter: drop-shadow(0 0 46px rgba(250, 59, 53, 0.6));
+  }
   to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
+    clip-path: inset(0 0% 0 0);
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(250, 59, 53, 0));
   }
 }
 
-.intro__trace {
-  width: min(70vw, 420px);
-  height: 6px;
-  margin: 10px auto;
-  overflow: visible;
+/* Прогрес-лінія — росте синхронно з реальним таймером інтро
+   (--intro-duration виставляється з script.js під фактичний introDuration,
+   різний на мобільному/десктопі), а не декоративна незалежна анімація. */
+.intro__progress {
+  width: min(60vw, 320px);
+  height: 3px;
+  margin: 26px auto 0;
+  background: var(--line-on-dark);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
 }
 
-.intro__trace path {
-  fill: none;
-  stroke: var(--signal-red);
-  stroke-width: 2;
-  stroke-dasharray: 420;
-  stroke-dashoffset: 420;
+.intro__progress-fill {
+  display: block;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--signal-red), var(--ember-500));
+  border-radius: inherit;
+  box-shadow: 0 0 10px rgba(250, 59, 53, 0.6);
 }
 
-.intro.is-playing .intro__trace path {
-  animation: introTrace 600ms var(--ease-ui) 750ms forwards;
-}
-
-@keyframes introTrace {
-  to {
-    stroke-dashoffset: 0;
-  }
+.intro.is-playing .intro__progress-fill {
+  transition: width var(--intro-duration, 4400ms) linear;
+  width: 100%;
 }
 
 .intro__skip {
@@ -325,39 +329,33 @@ h3 {
   transform: translateY(-2px);
 }
 
-/* Мобільний rils-трафік: інтро скорочено з 2.6с до ~1.3с (script.js
-   introDuration), тож анімація появи слів стиснута під новий таймлайн,
-   а не обрізається по живому на середині. */
+/* Мобільний рілс-трафік: інтро скорочено (script.js introDuration ~1.3с),
+   тож wipe-анімація wordmark стиснута під новий таймлайн, а не обрізається
+   по живому на середині. Прогрес-лінія вже синхронізована автоматично
+   через --intro-duration (виставляється з JS), окремого правила не треба. */
 @media (max-width: 639px) {
-  .intro.is-playing .intro__word--1 {
-    animation-duration: 420ms;
+  .intro.is-playing .intro__mark img {
+    animation-duration: 480ms;
     animation-delay: 60ms;
-  }
-  .intro.is-playing .intro__trace path {
-    animation-duration: 320ms;
-    animation-delay: 460ms;
-  }
-  .intro.is-playing .intro__word--2 {
-    animation-duration: 420ms;
-    animation-delay: 500ms;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .intro,
-  .intro__word,
+  .intro__mark img,
   .intro__skip,
-  .intro__trace path {
+  .intro__progress-fill {
     animation: none !important;
     transition: opacity 150ms linear !important;
   }
-  .intro__word {
-    opacity: 1;
-    filter: none;
+  .intro__mark img {
+    clip-path: inset(0 0 0 0);
     transform: none;
+    filter: none;
+    opacity: 1;
   }
-  .intro__trace path {
-    stroke-dashoffset: 0;
+  .intro__progress-fill {
+    width: 100%;
   }
 }
 
@@ -574,8 +572,11 @@ h3 {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  /* Читабельність wordmark/CTA над портретом: темна підкладка знизу й зліва. */
-  background: linear-gradient(180deg, transparent 36%, rgba(8, 9, 11, 0.55) 66%, rgba(8, 9, 11, 0.93) 100%),
+  /* Читабельність wordmark/CTA над портретом: темна підкладка знизу й зліва.
+     Нижня зупинка — суцільний ink-950, щоб orbit-коло (гей у .hero__orbit)
+     плавно розчинялось у темряві, а не обрізалось різкою лінією по межі
+     секції (фідбек власника). */
+  background: linear-gradient(180deg, transparent 36%, rgba(8, 9, 11, 0.55) 66%, var(--ink-950) 100%),
     linear-gradient(90deg, rgba(8, 9, 11, 0.86) 0%, rgba(8, 9, 11, 0.3) 40%, transparent 64%);
 }
 
@@ -603,26 +604,48 @@ h3 {
 }
 
 @media (min-width: 1024px) {
-  /* Уся hero-композиція (портрет + wordmark + CTA) центрується як єдина
-     група в межах viewport, а не притискається до низу з портретом,
-     обрізаним по верху (фідбек власника після живого перегляду). Портрет
-     і текстовий блок центруються в одній і тій самій висоті (viewport мінус
-     padding хедера/низу), тому візуально утворюють один центрований вузол. */
+  /* Власник уточнив точну структуру (не накладення шарів, а чистий
+     вертикальний стек, усе по центру viewport): 1) фото — велике,
+     домінантне, зверху; 2) wordmark — під фото; 3) кнопки — під wordmark,
+     центровані відносно нього. Уся група центрується як одне ціле і
+     горизонтально, і вертикально в межах hero. Портрет виходить з
+     position:absolute (full-bleed фон) і стає звичайним flow-елементом —
+     тим самим першим flex-дочірнім .hero, тому природно опиняється НАД
+     .container (wordmark+кнопки) без додаткового z-index/order. */
   .hero {
     justify-content: center;
-  }
-
-  .hero__portrait {
-    top: 96px;
-    right: 0;
-    bottom: 40px;
-    left: 0;
     align-items: center;
   }
 
+  .hero__portrait {
+    position: relative;
+    inset: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    z-index: 0;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
   .hero__portrait img {
-    width: clamp(420px, 38vw, 680px);
-    max-height: 100%;
+    width: clamp(340px, 34vw, 580px);
+    max-height: 46vh;
+    /* М'якший fade лише по самому нижньому краю — фото тепер самостійний
+       домінантний блок, а не фон під текстом, тож не має розчинятись
+       так сильно, як у попередній layered-версії. */
+    -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 99%);
+    mask-image: linear-gradient(to bottom, black 82%, transparent 99%);
+  }
+
+  .hero__wordmark {
+    margin-inline: auto;
+  }
+
+  .hero__actions {
+    justify-content: center;
   }
 }
 
@@ -712,13 +735,6 @@ h3 {
   flex-wrap: wrap;
   align-items: center;
   gap: 16px;
-}
-
-.hero__hint {
-  width: 100%;
-  font-size: 12px;
-  color: var(--chrome-300);
-  margin-top: 4px;
 }
 
 .hero__scrollcue {
@@ -1145,20 +1161,34 @@ h3 {
 }
 
 .tour-list a {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 16px 4px;
+  padding: 16px 12px 16px 16px;
+  margin: 0 -12px;
+  border-radius: 10px;
+  border-left: 3px solid transparent;
   text-decoration: none;
   color: var(--paper-50);
-  transition: background var(--duration-fast) var(--ease-ui), padding-left var(--duration-fast) var(--ease-ui);
+  transition: background var(--duration-fast) var(--ease-ui), padding-left var(--duration-fast) var(--ease-ui),
+    border-color var(--duration-fast) var(--ease-ui);
 }
 
+/* Явний, недвозначний hover/focus-стан на КОНКРЕТНОМУ рядку — фідбек
+   власника: попередній варіант (лише тонка зміна фону) губився. Тепер:
+   помітніший фон + акцентний бордер зліва + колір стрілки. */
 .tour-list a:hover,
 .tour-list a:focus-visible {
-  background: var(--ink-800);
-  padding-left: 12px;
+  background: rgba(246, 245, 241, 0.08);
+  border-left-color: var(--signal-red);
+  padding-left: 24px;
+}
+
+.tour-list a:hover .tour-arrow,
+.tour-list a:focus-visible .tour-arrow {
+  color: var(--signal-red);
 }
 
 .tour-list .tour-date {
@@ -1187,6 +1217,7 @@ h3 {
   font-weight: 700;
   color: var(--chrome-300);
   white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-ui);
 }
 
 /* ===== БЛОК: DISCOGRAPHY RAIL ===== */
@@ -1212,19 +1243,19 @@ h3 {
   border-radius: var(--radius-pill);
 }
 
+/* Картка — нормальний потік (обкладинка блоком зверху у власних, точних
+   пропорціях 1:1, текст під нею), не overlay-текст поверх фото. Власник
+   уточнив: розмір/пропорції САМОЇ картки-контейнера мають наближатись до
+   реальних пропорцій обкладинки (квадрат для музики), а не єдина
+   універсальна форма для всього. */
 .rail__card {
   scroll-snap-align: start;
   flex: 0 0 auto;
   width: 210px;
-  aspect-ratio: 3 / 4;
   border-radius: var(--radius-card);
   border: 1px solid var(--line-on-dark);
   position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 16px;
   background: var(--ink-800);
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color var(--duration-base) var(--ease-ui),
     box-shadow var(--duration-base) var(--ease-ui);
@@ -1238,17 +1269,14 @@ h3 {
   box-shadow: 0 28px 54px rgba(0, 0, 0, 0.4);
 }
 
-/* Обкладинка — object-fit: contain (не cover): жоден піксель квадратної
-   обкладинки не обрізається, навіть якщо навколо лишається підкладка
-   ink-800 (картка вища за квадрат). Фідбек власника: текст на деяких
-   обкладинках зрізало по краю картки при cover. */
+/* Обкладинка — власний квадратний блок (aspect-ratio: 1/1, реальна
+   пропорція cover art), object-fit: cover тепер безпечний: контейнер і
+   зображення мають ту саму пропорцію, кадрування не потрібне. */
 .rail__cover {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: var(--ink-800);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
   transition: transform 700ms var(--ease-ui);
 }
 
@@ -1257,8 +1285,9 @@ h3 {
   transform: scale(1.05);
 }
 
-/* Spotlight — світлова пляма за курсором (десктоп hover, тільки pointer:
-   fine + не reduced-motion, вмикається/рухається з JS через --x/--y). */
+/* Spotlight — світлова пляма за курсором на всю картку (десктоп hover,
+   тільки pointer: fine + не reduced-motion, вмикається/рухається з JS
+   через --x/--y). */
 .rail__spotlight {
   position: absolute;
   inset: 0;
@@ -1274,21 +1303,16 @@ h3 {
   opacity: 1;
 }
 
-.rail__card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Космічний scrim, узгоджений з hero: chrome-зорі зверху, ink+signal-red знизу
-     для читабельності тексту (brief §2.1/§4.1). */
-  background: radial-gradient(1.2px 1.2px at 20% 12%, rgba(200, 203, 208, 0.7), transparent 55%),
-    radial-gradient(1px 1px at 75% 8%, rgba(200, 203, 208, 0.55), transparent 55%),
-    linear-gradient(180deg, rgba(8, 9, 11, 0.05) 0%, rgba(8, 9, 11, 0.55) 55%, rgba(8, 9, 11, 0.92) 100%);
+.rail__info {
+  position: relative;
+  z-index: 1;
+  padding: 14px 16px 0;
 }
 
-.rail__info,
 .rail__actions {
   position: relative;
   z-index: 1;
+  padding: 0 16px 16px;
 }
 
 .rail__year {
@@ -1374,7 +1398,7 @@ h3 {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   opacity: 0.85;
 }
 
@@ -1445,30 +1469,36 @@ h3 {
   }
 }
 
+/* Картка кліпу — контейнер тепер 16:9 (реальна пропорція YouTube-постера,
+   не універсальна 4:5 форма для всього), постер block-рівня зверху, назва
+   під ним у нормальному потоці — той самий принцип, що й DiscographyRail. */
 .video__card {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
   border-radius: var(--radius-card);
   border: 1px solid var(--line-on-dark);
   background: var(--ink-800);
   text-decoration: none;
   color: var(--paper-50);
   display: flex;
-  align-items: flex-end;
-  padding: 14px;
+  flex-direction: column;
   overflow: hidden;
   cursor: pointer;
   text-align: left;
+  transition: border-color var(--duration-base) var(--ease-ui), box-shadow var(--duration-base) var(--ease-ui);
+}
+
+.video__card:hover,
+.video__card:focus-visible {
+  border-color: var(--chrome-300);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 }
 
 .video__card-poster {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  opacity: 0.8;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   transition: transform 700ms var(--ease-ui);
 }
 
@@ -1477,19 +1507,12 @@ h3 {
   transform: scale(1.05);
 }
 
-.video__card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Постійний scrim для читабельності назви поверх постера. */
-  background: linear-gradient(180deg, transparent 40%, rgba(8, 9, 11, 0.85) 100%);
-}
-
 .video__card::after {
   content: "";
   position: absolute;
-  inset: 0;
-  /* Chrome/signal-red hover-акцент замість ember-orange — той самий дует, що й hero. */
+  inset: 0 0 auto 0;
+  aspect-ratio: 16 / 9;
+  /* Chrome/signal-red hover-акцент поверх постера (не поверх тексту знизу) — той самий дует, що й hero. */
   background: linear-gradient(200deg, rgba(250, 59, 53, 0.28), rgba(200, 203, 208, 0.14) 55%, transparent 78%);
   opacity: 0;
   transition: opacity var(--duration-base) var(--ease-ui);
@@ -1506,6 +1529,7 @@ h3 {
   font-weight: 700;
   font-size: 14px;
   line-height: 1.2;
+  padding: 12px 14px 14px;
 }
 
 /* ===== БЛОК: STORY ===== */
@@ -1615,70 +1639,20 @@ h3 {
   background: linear-gradient(180deg, transparent 40%, rgba(8, 9, 11, 0.75));
 }
 
-.gallery__tile img,
-.gallery__tile .swatch {
+.gallery__tile img {
   position: absolute;
   inset: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  background: var(--ink-800);
   transition: transform 700ms var(--ease-ui);
 }
 
-.gallery__tile:hover .swatch,
-.gallery__tile:focus-visible .swatch {
+.gallery__tile:hover img,
+.gallery__tile:focus-visible img {
   transform: scale(1.05);
-}
-
-/* Зоряна текстура поверх кожної плашки — та сама космічна мова, що й
-   .hero__field, аби плашки без ліцензованих фото читались як навмисний
-   editorial-приом, а не порожній placeholder (qa-conversion.md п.6). */
-.swatch--1 {
-  background-image: radial-gradient(1.4px 1.4px at 14% 22%, rgba(246, 245, 241, 0.55), transparent 60%),
-    radial-gradient(1px 1px at 78% 14%, rgba(246, 245, 241, 0.4), transparent 60%),
-    radial-gradient(1.2px 1.2px at 62% 68%, rgba(246, 245, 241, 0.45), transparent 60%),
-    radial-gradient(1px 1px at 24% 82%, rgba(246, 245, 241, 0.35), transparent 60%),
-    radial-gradient(1.1px 1.1px at 90% 58%, rgba(246, 245, 241, 0.4), transparent 60%),
-    linear-gradient(155deg, var(--berry-700), var(--ink-950) 70%);
-}
-.swatch--2 {
-  background-image: radial-gradient(1.4px 1.4px at 14% 22%, rgba(246, 245, 241, 0.55), transparent 60%),
-    radial-gradient(1px 1px at 78% 14%, rgba(246, 245, 241, 0.4), transparent 60%),
-    radial-gradient(1.2px 1.2px at 62% 68%, rgba(246, 245, 241, 0.45), transparent 60%),
-    radial-gradient(1px 1px at 24% 82%, rgba(246, 245, 241, 0.35), transparent 60%),
-    radial-gradient(1.1px 1.1px at 90% 58%, rgba(246, 245, 241, 0.4), transparent 60%),
-    linear-gradient(155deg, var(--ink-800), var(--chrome-300) 140%);
-}
-.swatch--3 {
-  background-image: radial-gradient(1.4px 1.4px at 14% 22%, rgba(246, 245, 241, 0.55), transparent 60%),
-    radial-gradient(1px 1px at 78% 14%, rgba(246, 245, 241, 0.4), transparent 60%),
-    radial-gradient(1.2px 1.2px at 62% 68%, rgba(246, 245, 241, 0.45), transparent 60%),
-    radial-gradient(1px 1px at 24% 82%, rgba(246, 245, 241, 0.35), transparent 60%),
-    radial-gradient(1.1px 1.1px at 90% 58%, rgba(246, 245, 241, 0.4), transparent 60%),
-    linear-gradient(155deg, var(--cyan-500), var(--ink-950) 65%);
-}
-.swatch--4 {
-  background-image: radial-gradient(1.4px 1.4px at 14% 22%, rgba(246, 245, 241, 0.55), transparent 60%),
-    radial-gradient(1px 1px at 78% 14%, rgba(246, 245, 241, 0.4), transparent 60%),
-    radial-gradient(1.2px 1.2px at 62% 68%, rgba(246, 245, 241, 0.45), transparent 60%),
-    radial-gradient(1px 1px at 24% 82%, rgba(246, 245, 241, 0.35), transparent 60%),
-    radial-gradient(1.1px 1.1px at 90% 58%, rgba(246, 245, 241, 0.4), transparent 60%),
-    linear-gradient(155deg, var(--ember-500), var(--ink-950) 68%);
-}
-.swatch--5 {
-  background-image: radial-gradient(1.4px 1.4px at 14% 22%, rgba(246, 245, 241, 0.55), transparent 60%),
-    radial-gradient(1px 1px at 78% 14%, rgba(246, 245, 241, 0.4), transparent 60%),
-    radial-gradient(1.2px 1.2px at 62% 68%, rgba(246, 245, 241, 0.45), transparent 60%),
-    radial-gradient(1px 1px at 24% 82%, rgba(246, 245, 241, 0.35), transparent 60%),
-    radial-gradient(1.1px 1.1px at 90% 58%, rgba(246, 245, 241, 0.4), transparent 60%),
-    linear-gradient(155deg, var(--signal-red), var(--ink-950) 70%);
-}
-.swatch--6 {
-  background-image: radial-gradient(1.4px 1.4px at 14% 22%, rgba(246, 245, 241, 0.55), transparent 60%),
-    radial-gradient(1px 1px at 78% 14%, rgba(246, 245, 241, 0.4), transparent 60%),
-    radial-gradient(1.2px 1.2px at 62% 68%, rgba(246, 245, 241, 0.45), transparent 60%),
-    radial-gradient(1px 1px at 24% 82%, rgba(246, 245, 241, 0.35), transparent 60%),
-    radial-gradient(1.1px 1.1px at 90% 58%, rgba(246, 245, 241, 0.4), transparent 60%),
-    linear-gradient(155deg, var(--ink-700), var(--berry-700) 130%);
 }
 
 /* ===== БЛОК: FOLLOW ===== */
@@ -1877,6 +1851,48 @@ h3 {
   color: var(--chrome-300);
 }
 
+/* Власник: верхній блок футера (wordmark + tagline + соцмережі + copy-link)
+   притиснутий до лівого краю на desktop — треба відцентрувати відносно
+   всієї ширини сторінки й зменшити (менший wordmark, компактніші
+   відступи, менша загальна висота секції). .site-footer__legal (copyright
+   рядок) лишається full-width зі своїм space-between — не входить у
+   центрований блок. */
+@media (min-width: 1024px) {
+  .site-footer {
+    padding-block: calc(var(--section-space) * 0.6) 32px;
+  }
+
+  .site-footer .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .site-footer__mark {
+    width: clamp(160px, 20vw, 260px);
+  }
+
+  .site-footer__tagline {
+    margin-top: 12px;
+  }
+
+  .site-footer__links {
+    margin-top: 24px;
+    justify-content: center;
+  }
+
+  .site-footer__copy {
+    margin-top: 16px;
+  }
+
+  .site-footer__legal {
+    align-self: stretch;
+    text-align: left;
+    margin-top: 32px;
+  }
+}
+
 /* ===== БЛОК: PLATFORM SHEET (модалка стрімінгу) ===== */
 .sheet-backdrop {
   position: fixed;
@@ -2018,11 +2034,21 @@ h3 {
   width: min(92vw, 620px);
   aspect-ratio: 3 / 4;
   border-radius: var(--radius-card);
+  background: var(--ink-800);
   position: relative;
   display: flex;
   align-items: flex-end;
   padding: 32px;
   overflow: hidden;
+}
+
+.gallery-modal__frame img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .gallery-modal__frame span {

@@ -36,9 +36,13 @@
       return;
     }
     document.body.classList.add("intro-lock");
-    intro.classList.add("is-playing");
     sessionStorage.setItem("introSeen", "true");
     var introDuration = window.innerWidth < 640 ? 1300 : 4400;
+    /* Прогрес-лінія (.intro__progress-fill) читає цю CSS-змінну для своєї
+       transition-duration — вона росте синхронно з реальним таймером
+       інтро, а не за окремою декоративною анімацією. */
+    intro.style.setProperty("--intro-duration", introDuration + "ms");
+    intro.classList.add("is-playing");
     var timer = window.setTimeout(finishIntro, introDuration);
 
     if (introSkip) {
@@ -233,10 +237,19 @@
   function renderGallerySlide(index) {
     if (!galleryFrame) return;
     var tile = galleryTiles[index];
-    var swatchClass = tile.getAttribute("data-swatch");
+    var imageUrl = tile.getAttribute("data-image");
     var caption = tile.getAttribute("data-caption");
-    galleryFrame.className = "gallery-modal__frame " + swatchClass;
-    galleryFrame.innerHTML = '<span>' + caption + "</span>";
+    galleryFrame.className = "gallery-modal__frame";
+    galleryFrame.innerHTML = "";
+    if (imageUrl) {
+      var img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = caption || "";
+      galleryFrame.appendChild(img);
+    }
+    var captionEl = document.createElement("span");
+    captionEl.textContent = caption || "";
+    galleryFrame.appendChild(captionEl);
   }
 
   function openGallery(index) {

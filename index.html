@@ -125,13 +125,20 @@
 
 <a class="skip-link" href="#main">Перейти до основного вмісту</a>
 
-<!-- ===== БЛОК: ІНТРО ===== -->
+<!-- ===== БЛОК: ІНТРО =====
+     Реальний wordmark (той самий assets/wordmark-real.png, що й у hero) —
+     не окремий текстовий рядок іншим шрифтом. Reveal через clip-path-wipe
+     на самому зображенні + прогрес-лінія, синхронізована з JS-таймером
+     інтро (--intro-duration, script.js). -->
 <div id="intro" class="intro" aria-hidden="false">
   <div class="grain" aria-hidden="true"></div>
   <div class="intro__stage">
-    <span class="intro__word intro__word--1">АННА</span>
-    <svg class="intro__trace" viewBox="0 0 420 6" aria-hidden="true"><path d="M0 3 H420"></path></svg>
-    <span class="intro__word intro__word--2">ТРІНЧЕР</span>
+    <div class="intro__mark">
+      <img src="assets/wordmark-real.png" alt="Анна Трінчер" width="864" height="239">
+    </div>
+    <div class="intro__progress" aria-hidden="true">
+      <span class="intro__progress-fill"></span>
+    </div>
   </div>
   <button type="button" class="intro__skip" id="introSkip">Пропустити вступ</button>
 </div>
@@ -205,7 +212,6 @@
           <span class="btn__fill" aria-hidden="true"></span>
           <span class="btn__label">Концерти</span>
         </a>
-        <p class="hero__hint">Оберіть&nbsp;платформу для&nbsp;відтворення.</p>
       </div>
     </div>
 
@@ -609,7 +615,14 @@
     </div>
   </section>
 
-  <!-- ===== БЛОК: EDITORIAL GALLERY (типографічні акценти — без фото Анни, gaps.md) ===== -->
+  <!-- ===== БЛОК: EDITORIAL GALLERY =====
+       2 реальні фото — офіційні Karabas-афіші підтверджених концертів (той
+       самий рівень перевірки, що й hero-фото, gaps.md розділ 14): Київ
+       (той самий кадр, що й hero) і тур-кадр (Львів/Одеса/Вінниця, той
+       самий кадр на кількох афішах). Решта тайлів — офіційні YouTube-постери
+       кліпів (i.ytimg.com/vi/{ID}/maxresdefault.jpg), той самий безпечний
+       публічний CDN-паттерн, що вже використовується в VideoRail, тут у
+       ролі editorial-тайлів галереї. -->
   <section class="section gallery" id="gallery">
     <div class="container">
       <div class="section__head reveal">
@@ -618,28 +631,36 @@
       </div>
 
       <div class="gallery__grid reveal">
-        <button type="button" class="gallery__tile" data-swatch="swatch--1" data-caption="Маргарита — 2026">
-          <span class="swatch swatch--1" aria-hidden="true"></span>
+        <button type="button" class="gallery__tile" data-image="assets/gallery-kyiv.webp" data-caption="Зірочка. Палац — Київ, 2026">
+          <img class="gallery__cover" src="assets/gallery-kyiv.webp" alt="Анна Трінчер, офіційна афіша концерту в Палаці спорту (Karabas)" loading="lazy" width="560" height="535">
+          <span>Зірочка. Палац — Київ, 2026</span>
+        </button>
+        <button type="button" class="gallery__tile" data-image="assets/gallery-tour.webp" data-caption="Тур містами — 2026">
+          <img class="gallery__cover" src="assets/gallery-tour.webp" alt="Анна Трінчер, офіційний тур-кадр (Karabas, Одеса/Львів/Вінниця)" loading="lazy" width="640" height="505">
+          <span>Тур містами — 2026</span>
+        </button>
+        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/gAXU1Bvxngg/maxresdefault.jpg" data-caption="Маргарита — 2026">
+          <img class="gallery__cover" src="https://i.ytimg.com/vi/gAXU1Bvxngg/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Маргарита»" loading="lazy" width="1280" height="720">
           <span>Маргарита — 2026</span>
         </button>
-        <button type="button" class="gallery__tile" data-swatch="swatch--2" data-caption="Зірочка палай — 2025">
-          <span class="swatch swatch--2" aria-hidden="true"></span>
+        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" data-caption="Зірочка палай — 2025">
+          <img class="gallery__cover" src="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Зірочка палай»" loading="lazy" width="1280" height="720">
           <span>Зірочка палай — 2025</span>
         </button>
-        <button type="button" class="gallery__tile" data-swatch="swatch--3" data-caption="No cocaina — 2025">
-          <span class="swatch swatch--3" aria-hidden="true"></span>
+        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" data-caption="No cocaina — 2025">
+          <img class="gallery__cover" src="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" alt="Кадр з офіційного кліпу «No cocaina»" loading="lazy" width="1280" height="720">
           <span>No cocaina — 2025</span>
         </button>
-        <button type="button" class="gallery__tile" data-swatch="swatch--4" data-caption="Твоя мама — 2026">
-          <span class="swatch swatch--4" aria-hidden="true"></span>
+        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" data-caption="Твоя мама — 2026">
+          <img class="gallery__cover" src="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Твоя мама»" loading="lazy" width="1280" height="720">
           <span>Твоя мама — 2026</span>
         </button>
-        <button type="button" class="gallery__tile" data-swatch="swatch--5" data-caption="Півонії — 2025">
-          <span class="swatch swatch--5" aria-hidden="true"></span>
+        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" data-caption="Півонії — 2025">
+          <img class="gallery__cover" src="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Півонії»" loading="lazy" width="1280" height="720">
           <span>Півонії — 2025</span>
         </button>
-        <button type="button" class="gallery__tile" data-swatch="swatch--6" data-caption="Колоски — 2023">
-          <span class="swatch swatch--6" aria-hidden="true"></span>
+        <button type="button" class="gallery__tile" data-image="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" data-caption="Колоски — 2023">
+          <img class="gallery__cover" src="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" alt="Кадр з офіційного кліпу «Колоски»" loading="lazy" width="1280" height="720">
           <span>Колоски — 2023</span>
         </button>
       </div>
