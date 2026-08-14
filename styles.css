@@ -775,36 +775,6 @@ h3 {
   }
 }
 
-@media (max-width: 639px) {
-  .hero__portrait {
-    justify-content: center;
-    align-items: flex-start;
-  }
-
-  .hero__portrait img {
-    width: min(86vw, 460px);
-    max-height: 58%;
-    -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 85%);
-    mask-image: linear-gradient(to bottom, black 40%, transparent 85%);
-  }
-
-  /* Мобільна QA: на низьких viewport (~700px і нижче) "Гортайте" сідав
-     впритул під кнопками (обидва — bottom-anchored у межах тієї самої
-     40px-зони). Трохи більше повітря знизу під контент + сам scroll cue
-     нижче й компактніший, щоб рядки завжди читались окремо. */
-  .hero {
-    padding-bottom: 56px;
-  }
-
-  .hero__scrollcue {
-    bottom: 10px;
-  }
-
-  .hero__scrollcue::before {
-    height: 20px;
-  }
-}
-
 .hero__orbit {
   position: absolute;
   z-index: -1;
@@ -912,6 +882,84 @@ h3 {
   width: 1px;
   height: 34px;
   background: linear-gradient(var(--chrome-300), transparent);
+}
+
+/* Мобільна/планшетна версія (< 1024px, той самий поріг, що й перемикання
+   на гамбургер-меню) — раніше тут фото й wordmark+кнопки жили в ДВОХ
+   непов'язаних шарах (фото — position:absolute на всю висоту hero, текст —
+   окремий flex-блок знизу), тому між ними лишалась порожня "мертва" зона
+   й фото не мало того самого домінантного накладення з тінню, що на
+   desktop. Тепер та сама композиційна логіка, що на desktop (розділ 18
+   gaps.md): фото — normal-flow елемент, wordmark накладається на його
+   нижню частину через від'ємний margin + drop-shadow для контрасту, уся
+   група центрується в hero. Розміри/офсети свої (менші, під вужчий екран),
+   не піксель-в-піксель ті самі, що на desktop. Розміщено ПІСЛЯ
+   безумовних .hero__wordmark/.hero__actions/.hero__scrollcue(::before)
+   правил вище — інакше ці пізніші однаково-специфічні безумовні правила
+   в каскаді перебивали б значення з медіа-блоку незалежно від того, чи
+   збігається сама медіа-умова (реальний баг, знайдений і виправлений
+   цієї сесії: `bottom`/`left`/`::before height` спершу тихо не
+   застосовувались на мобільному через саме цей порядок). */
+@media (max-width: 1023px) {
+  .hero {
+    justify-content: center;
+    padding-bottom: 56px;
+  }
+
+  .hero__portrait {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: clamp(-90px, -18vw, -50px);
+  }
+
+  .hero__portrait img {
+    width: min(88vw, 480px);
+    max-height: 56vh;
+    /* Фото тепер самостійний домінантний блок (як на desktop) — fade лише
+       по самому нижньому краю, не з середини кадру. */
+    -webkit-mask-image: linear-gradient(to bottom, black 78%, transparent 97%);
+    mask-image: linear-gradient(to bottom, black 78%, transparent 97%);
+  }
+
+  .hero .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero__wordmark {
+    margin-inline: auto;
+    /* Той самий прийом, що на desktop (gaps.md розділ 19.7): тінь на
+       ЗОВНІШНЬОМУ .hero__wordmark, не на img — .hero__wordmark-inner має
+       overflow:hidden (потрібен для reveal-анімації), тінь на img
+       обрізалась би рівно по його межі. */
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+  }
+
+  .hero__wordmark img {
+    filter: none;
+  }
+
+  .hero__actions {
+    justify-content: center;
+  }
+
+  /* Scroll cue "Гортайте" — той самий горизонтальний центр, що на desktop
+     (gaps.md розділ 18), а не притиснутий до лівого краю. Мобільна QA
+     (gaps.md розділ 19.3): на низьких viewport (~700px і нижче) рядок
+     сідав впритул під кнопками — компактніший офсет/риска лишаються. */
+  .hero__scrollcue {
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+  }
+
+  .hero__scrollcue::before {
+    height: 20px;
+  }
 }
 
 /* Завжди на місці під час скролу (position:fixed відносно viewport, не
@@ -2013,23 +2061,36 @@ h3 {
 }
 
 /* ===== БЛОК: FOOTER ===== */
+/* Центрований компактний футер-блок (wordmark + tagline + соцмережі +
+   copy-link) — за прямим фідбоком власника про desktop (gaps.md розділ
+   15), тепер застосовано на ВСІХ ширинах (не лише min-width:1024px), бо
+   те саме "притиснуто до лівого краю, не компактно" спостерігалось і на
+   мобільному. `.site-footer__legal` (copyright/disclaimer) явно лишається
+   full-width/left (окремий елемент, не входить у центрований блок). */
 .site-footer {
   border-top: 1px solid var(--line-on-dark-soft);
-  padding-block: var(--section-space) 40px;
+  padding-block: calc(var(--section-space) * 0.6) 32px;
   position: relative;
   overflow: hidden;
 }
 
+.site-footer .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 .site-footer__mark {
   display: block;
-  width: clamp(220px, 46vw, 560px);
+  width: clamp(160px, 40vw, 260px);
   max-width: 100%;
   height: auto;
   opacity: 0.9;
 }
 
 .site-footer__tagline {
-  margin-top: 18px;
+  margin-top: 12px;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -2038,9 +2099,10 @@ h3 {
 }
 
 .site-footer__links {
-  margin-top: 48px;
+  margin-top: 24px;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 24px;
 }
 
@@ -2063,7 +2125,7 @@ h3 {
    + іконка ланцюжка), щоб не виглядати як випадковий сірий системний
    <button> серед решти дизайну (фідбек власника). */
 .site-footer__copy {
-  margin-top: 24px;
+  margin-top: 16px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -2087,7 +2149,9 @@ h3 {
 }
 
 .site-footer__legal {
-  margin-top: 48px;
+  align-self: stretch;
+  text-align: left;
+  margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid var(--line-on-dark-soft);
   display: flex;
@@ -2098,45 +2162,9 @@ h3 {
   color: var(--chrome-300);
 }
 
-/* Власник: верхній блок футера (wordmark + tagline + соцмережі + copy-link)
-   притиснутий до лівого краю на desktop — треба відцентрувати відносно
-   всієї ширини сторінки й зменшити (менший wordmark, компактніші
-   відступи, менша загальна висота секції). .site-footer__legal (copyright
-   рядок) лишається full-width зі своїм space-between — не входить у
-   центрований блок. */
 @media (min-width: 1024px) {
-  .site-footer {
-    padding-block: calc(var(--section-space) * 0.6) 32px;
-  }
-
-  .site-footer .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
   .site-footer__mark {
     width: clamp(160px, 20vw, 260px);
-  }
-
-  .site-footer__tagline {
-    margin-top: 12px;
-  }
-
-  .site-footer__links {
-    margin-top: 24px;
-    justify-content: center;
-  }
-
-  .site-footer__copy {
-    margin-top: 16px;
-  }
-
-  .site-footer__legal {
-    align-self: stretch;
-    text-align: left;
-    margin-top: 32px;
   }
 }
 
