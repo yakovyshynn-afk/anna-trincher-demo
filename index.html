@@ -123,6 +123,24 @@
 </head>
 <body>
 
+<!-- ===== БЛОК: COSMIC FIELD (наскрізний фон) =====
+     Один фіксований (position:fixed, весь viewport) шар позаду ВСЬОГО
+     контенту сайту — не окремий canvas/ефект на кожну секцію (дорого й
+     візуально шумно), а один тонкий наскрізний фоновий шар: слабка
+     nebula (CSS radial-gradient, той самий колірний рецепт, що
+     .hero__field, але в рази слабший) + розріджений canvas-starfield
+     (script.js, initCosmicField — той самий підхід, що hero__stars,
+     менше зірок). Секції нижче hero не задають власний opaque
+     background (лише border-top), тож цей шар "просвічує" крізь усі
+     них — саме та наскрізна космічна мова, про яку власник казав, що
+     губиться за межами hero. z-index:-1, першим у DOM body, аби
+     гарантовано малювався позаду звичайного in-flow контенту (CSS
+     painting order: негативний z-index малюється до non-positioned
+     descendants). aria-hidden — суто декоративний шар. -->
+<div class="cosmic-field" aria-hidden="true">
+  <canvas id="cosmicStars"></canvas>
+</div>
+
 <a class="skip-link" href="#main">Перейти до основного вмісту</a>
 
 <!-- ===== БЛОК: ІНТРО =====
@@ -239,6 +257,21 @@
     </svg>
   </a>
 </div>
+
+<!-- ===== БЛОК: BACK TO TOP =====
+     Floating-кнопка "нагору" — за прямою вимогою власника. Завжди в DOM
+     (на рівні <body>, той самий рівень, що social-rail), видимість
+     керується класом .is-visible (script.js: IntersectionObserver на
+     #hero — щойно hero повністю виходить з viewport, кнопка з'являється).
+     Клік — плавний скрол на початок сторінки, миттєвий при
+     prefers-reduced-motion. Свій кут (bottom-right), не перекриває
+     social-rail (right/top:50%, тільки desktop). -->
+<button type="button" class="back-to-top" id="backToTop" aria-label="Повернутись на початок сторінки">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+    <path d="M12 19V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M6 11l6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
 
 <main id="main">
 
