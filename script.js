@@ -136,21 +136,57 @@
   }
 
   /* ===== БЛОК: PLATFORM SHEET =====
-     Одна модалка на весь сайт (Apple Music + YouTube — єдині верифіковані
-     лінки, brief §15). Клік по конкретному треку відкриває ту саму модалку,
-     але з заголовком саме цього треку (data-track) — Spotify/Deezer/YouTube
-     Music і per-трек deep links відсутні, поки їх не підтвердить менеджмент
-     (gaps.md розділ 3). */
+     Одна модалка на весь сайт, але вміст рендериться під конкретний трек
+     (data-track): Spotify + Apple Music + YouTube Music. Spotify — усі 10
+     track ID підтверджені напряму координатором (gaps.md розділ 4, оновлено
+     за фідбеком власника). Apple Music лишається на рівні артиста — брифом
+     прямо заборонено вгадувати per-track deep link (§2.2). YouTube Music
+     використовує ті самі YouTube video ID, що вже звірені вручну на
+     youtube.com для VideoModal (gaps.md розділ 3) — публічні відео
+     офіційного каналу автоматично індексуються на music.youtube.com під
+     тим самим ID, окремо на music.youtube.com цієї сесії не перевірялось. */
+  var APPLE_MUSIC_ARTIST_URL = "https://music.apple.com/ua/artist/анна-трінчер/1436704585";
+  var TRACK_PLATFORMS = {
+    "Маргарита": { youtubeId: "gAXU1Bvxngg", spotifyTrack: "4TlI6xqjE9pogjuJ2JlbZX" },
+    "Твоя мама": { youtubeId: "ENBOo1323vo", spotifyTrack: "58XH7RaJKOPCvqDIHP3N9X" },
+    "Колоски": { youtubeId: "yKmE2MHGjG8", spotifyTrack: "17QW3dioB9CIUh0oCnyXKz" },
+    "Бар за баром": { youtubeId: "eazVVV0-YWk", spotifyTrack: "2EJZw3QSNQS1LSIQMTd2TQ" },
+    "Треш": { youtubeId: "a8zgbf9cLEY", spotifyTrack: "3oFXd7mzOSYfcXsC4RAnvt" },
+    "Півонії": { youtubeId: "kslh7pTCrQo", spotifyTrack: "6mkdNIS7OOMndjXVzgyA13" },
+    "Зірочка палай": { youtubeId: "CgYRiz9MXUk", spotifyTrack: "4J7GqAqdOfYrcOKJIp4m8U" },
+    "No cocaina": { youtubeId: "o6QtsXivJ9w", spotifyTrack: "6pJ0vytMPQ4qtEl6mJLegG" },
+    "Вином текла": { youtubeId: "D1l6Wp2pP_8", spotifyTrack: "4fQoTnKle8pAHgRaKq6SUI" },
+    "Очі": { youtubeId: "Dksj1wxC7rg", spotifyTrack: "6VkKjppsNMRmN0v68Xehwi" }
+  };
+
   var sheetBackdrop = document.getElementById("platformSheet");
   var sheetOpeners = document.querySelectorAll("[data-open-sheet]");
   var sheetClose = document.getElementById("sheetClose");
   var sheetTitleEl = document.getElementById("sheetTitle");
+  var sheetListEl = document.getElementById("sheetList");
+  var sheetNoteEl = document.getElementById("sheetNote");
   var lastFocused = null;
 
   function openSheet(trackTitle) {
     if (!sheetBackdrop) return;
+    var title = trackTitle || "Маргарита";
     if (sheetTitleEl) {
-      sheetTitleEl.textContent = "Слухати «" + (trackTitle || "Маргарита") + "»";
+      sheetTitleEl.textContent = "Слухати «" + title + "»";
+    }
+    var info = TRACK_PLATFORMS[title] || {};
+    var spotifyUrl = info.spotifyTrack ? "https://open.spotify.com/track/" + info.spotifyTrack : null;
+    var youtubeMusicUrl = info.youtubeId ? "https://music.youtube.com/watch?v=" + info.youtubeId : "https://music.youtube.com/channel/annatrincher";
+    if (sheetListEl) {
+      var links = [];
+      if (spotifyUrl) {
+        links.push('<a href="' + spotifyUrl + '" target="_blank" rel="noopener noreferrer">Spotify <small>Відкрити</small></a>');
+      }
+      links.push('<a href="' + APPLE_MUSIC_ARTIST_URL + '" target="_blank" rel="noopener noreferrer">Apple Music <small>Відкрити</small></a>');
+      links.push('<a href="' + youtubeMusicUrl + '" target="_blank" rel="noopener noreferrer">YouTube Music <small>Відкрити</small></a>');
+      sheetListEl.innerHTML = links.join("");
+    }
+    if (sheetNoteEl) {
+      sheetNoteEl.textContent = "Apple Music — сторінка артистки (per-track посилання поки недоступне).";
     }
     lastFocused = document.activeElement;
     sheetBackdrop.classList.add("is-open");
@@ -368,5 +404,65 @@
     nsObserver.observe(nextShowSection);
   } else if (nextShowSection) {
     nextShowSection.classList.add("is-in");
+  }
+
+  /* Спільна перевірка pointer:fine + hover:hover для десктопних-only
+     мікровзаємодій нижче (magnetic buttons, tilt+spotlight карток). */
+  var supportsFineHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  /* ===== БЛОК: MAGNETIC BUTTONS (CTA по всьому сайту) =====
+     Прямий запит власника: підняти hover/active стани кнопок до того ж
+     рівня "вау", що й tilt-картки (референс — 21st.dev, портовано на
+     vanilla JS). Важливо: transform ставиться на ВНУТРІШНІЙ .btn__label,
+     не на сам .btn — hit-area кнопки лишається нерухомою (клікабельна зона
+     не "втікає" з-під курсора), рухається лише візуальний текст усередині.
+     Тільки desktop hover (pointer: fine), без prefers-reduced-motion. */
+  if (supportsFineHover && !reduceMotion) {
+    var magneticButtons = document.querySelectorAll(".btn");
+    var magneticMax = 6; /* px — невеликий кап, суто візуальний нюанс. */
+    magneticButtons.forEach(function (btn) {
+      var label = btn.querySelector(".btn__label") || btn;
+      btn.classList.add("btn--magnetic");
+      var strength = 0.28;
+      function onMagneticMove(e) {
+        var rect = btn.getBoundingClientRect();
+        var relX = e.clientX - (rect.left + rect.width / 2);
+        var relY = e.clientY - (rect.top + rect.height / 2);
+        var moveX = Math.max(-magneticMax, Math.min(magneticMax, relX * strength));
+        var moveY = Math.max(-magneticMax, Math.min(magneticMax, relY * strength));
+        label.style.transform = "translate(" + moveX.toFixed(1) + "px, " + moveY.toFixed(1) + "px)";
+      }
+      function onMagneticLeave() {
+        label.style.transform = "";
+      }
+      btn.addEventListener("mousemove", onMagneticMove);
+      btn.addEventListener("mouseleave", onMagneticLeave);
+    });
+  }
+
+  /* ===== БЛОК: TILT + SPOTLIGHT (DiscographyRail) =====
+     Тільки desktop hover (pointer: fine, hover: hover) і без
+     prefers-reduced-motion — мобільний tap лишається статичним, як і решта
+     сайту. Рецепт — прямий запит власника (патерн з 21st.dev, tilt +
+     spotlight), портований на vanilla JS. */
+  if (supportsFineHover && !reduceMotion) {
+    var tiltCards = document.querySelectorAll(".rail__card");
+    tiltCards.forEach(function (card) {
+      function onMove(e) {
+        var rect = card.getBoundingClientRect();
+        var px = (e.clientX - rect.left) / rect.width - 0.5;
+        var py = (e.clientY - rect.top) / rect.height - 0.5;
+        var rotX = py * -8;
+        var rotY = px * 8;
+        card.style.transform = "perspective(1000px) rotateX(" + rotX.toFixed(2) + "deg) rotateY(" + rotY.toFixed(2) + "deg) translateY(-6px)";
+        card.style.setProperty("--x", (e.clientX - rect.left) + "px");
+        card.style.setProperty("--y", (e.clientY - rect.top) + "px");
+      }
+      function onLeave() {
+        card.style.transform = "";
+      }
+      card.addEventListener("mousemove", onMove);
+      card.addEventListener("mouseleave", onLeave);
+    });
   }
 })();
