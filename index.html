@@ -268,9 +268,18 @@
     <canvas class="hero__stars" id="heroStars" aria-hidden="true"></canvas>
     <svg class="hero__orbit" viewBox="0 0 400 400" aria-hidden="true">
       <circle cx="200" cy="200" r="176"></circle>
+      <!-- Другий, тонший пунктирний контур для ефекту глибини/паралаксу —
+           обертається у ПРОТИЛЕЖНОМУ напрямку й повільніше за головне коло
+           (heroOrbitRing2Spin, GPU-дешевий transform:rotate, як і основний
+           .hero__orbit-spin). Суто декоративний, не несе інформації. -->
+      <g class="hero__orbit-ring2-spin">
+        <circle class="hero__orbit-ring2" cx="200" cy="200" r="148"></circle>
+      </g>
       <!-- .hero__orbit-spin обертає лише червоний сегмент нескінченно по колу
            (CSS transform:rotate, keyframes heroOrbitSpin) — сіре коло-трек
-           лишається нерухомим, бо симетричне й рух непомітний. -->
+           лишається нерухомим, бо симетричне й рух непомітний. Пульсуюче
+           світіння (heroOrbitGlow) — окрема анімація на filter, не заважає
+           обертанню. -->
       <g class="hero__orbit-spin">
         <path d="M 376 200 A 176 176 0 0 1 200 376"></path>
       </g>

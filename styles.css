@@ -376,20 +376,39 @@ h3 {
   height: auto;
   clip-path: inset(0 100% 0 0);
   transform: scale(1.06);
-  filter: drop-shadow(0 0 34px rgba(250, 59, 53, 0.4));
 }
 
+/* Дві ОКРЕМІ послідовні анімації, не одна — реальний баг (фідбек власника):
+   filter:drop-shadow і clip-path на ОДНОМУ img, з піком blur на 60% timeline,
+   коли clip-path (не заданий явно на 60%, тож браузер лінійно інтерполює
+   його між 0% і 100%) ще НЕ повністю розкритий — drop-shadow рахує ореол
+   від альфа-каналу ВЖЕ ОБРІЗАНОГО зображення, тобто від прямокутної межі
+   clip-path, а не від контуру літер. Результат — видима прямокутна
+   підсвітка навколо частково розкритого wordmark замість світіння по
+   формі самих літер (той самий клас бага, що раніше був із тінню
+   .hero__wordmark: filter застосований до чогось із "чужим" прямокутним
+   краєм, не до чистого силуету). Фікс: introMarkWipe відповідає ЛИШЕ за
+   clip-path/transform і завершується першою; introMarkGlow (лише filter)
+   стартує з delay = момент, коли wipe вже повністю завершено (тому
+   зображення завжди повністю розкрите, коли на нього накладається
+   drop-shadow) — ореол рахується від альфа-каналу реальних літер. */
 .intro.is-playing .intro__mark img {
-  animation: introMarkWipe 900ms var(--ease-out-expo) 120ms forwards;
+  animation: introMarkWipe 900ms var(--ease-out-expo) 120ms forwards,
+    introMarkGlow 640ms ease-out 1020ms forwards;
 }
 
 @keyframes introMarkWipe {
-  60% {
-    filter: drop-shadow(0 0 46px rgba(250, 59, 53, 0.6));
-  }
   to {
     clip-path: inset(0 0% 0 0);
     transform: scale(1);
+  }
+}
+
+@keyframes introMarkGlow {
+  0% {
+    filter: drop-shadow(0 0 46px rgba(250, 59, 53, 0.6));
+  }
+  100% {
     filter: drop-shadow(0 0 0 rgba(250, 59, 53, 0));
   }
 }
@@ -432,8 +451,12 @@ h3 {
    окремого правила не треба. */
 @media (max-width: 639px) {
   .intro.is-playing .intro__mark img {
-    animation-duration: 480ms;
-    animation-delay: 60ms;
+    /* Дві анімації в скороченому shorthand — значення застосовуються по
+       порядку до introMarkWipe, потім introMarkGlow. Glow delay = wipe
+       delay(60ms) + wipe duration(480ms) = 540ms, той самий принцип, що на
+       desktop (glow стартує лише коли wipe вже повністю завершено). */
+    animation-duration: 480ms, 400ms;
+    animation-delay: 60ms, 540ms;
   }
 }
 
@@ -906,13 +929,21 @@ h3 {
   }
 }
 
+/* Розмір кола обмежений ТРЬОМА вимірами одразу — vh (висота viewport),
+   vw (ширина) і абсолютний px-стеля. До цього рахувався лише vw/px, тож
+   на типових desktop-висотах 700–900px коло (діаметр до 980px, центр на
+   top:46%) фізично не вміщалось між верхом і низом .hero (overflow:hidden
+   різко обрізав дугу) — саме той баг, на який вказав власник. 88vh —
+   підібрано так, щоб при top:46% верхній і нижній край кола лишали
+   позитивний відступ від меж .hero на всіх перевірених висотах
+   (700/800/900 desktop, 700/850 mobile), а не впритул чи за межами. */
 .hero__orbit {
   position: absolute;
   z-index: -1;
   top: 46%;
   left: 50%;
-  width: min(120vw, 980px);
-  height: min(120vw, 980px);
+  width: min(88vh, 120vw, 780px);
+  height: min(88vh, 120vw, 780px);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -921,6 +952,37 @@ h3 {
   fill: none;
   stroke: var(--line-on-dark);
   stroke-width: 1;
+}
+
+/* Другий, тонший пунктирний контур — суто декоративний шар глибини.
+   Менший радіус за головний трек (148 проти 176), пунктир робить власне
+   обертання видимим (суцільне симетричне коло рухом непомітне). Слабка
+   непрозорість — не конкурує з головним червоним сегментом за увагу. */
+.hero__orbit-ring2 {
+  fill: none;
+  stroke: var(--chrome-300, #c8cbd0);
+  stroke-width: 1;
+  stroke-dasharray: 1 13;
+  opacity: 0.4;
+}
+
+.hero__orbit-ring2-spin {
+  transform-origin: 200px 200px;
+}
+
+/* Протилежний напрямок (-360deg) і повільніший ритм (34s проти 18s
+   головного кола) за головним обертанням — паралакс-ефект глибини:
+   два шари рухаються по-різному, а не як один суцільний блок. Старт
+   одразу з reveal (без 2.6s затримки, на відміну від головного сегмента)
+   — цей шар суто фоновий, тонкий, не потребує "паузи на ефект появи". */
+.hero.is-in .hero__orbit-ring2-spin {
+  animation: heroOrbitRing2Spin 34s linear infinite;
+}
+
+@keyframes heroOrbitRing2Spin {
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 .hero__orbit path {
@@ -934,12 +996,31 @@ h3 {
 }
 
 .hero.is-in .hero__orbit path {
-  animation: orbitTrace 2.2s var(--ease-editorial) 400ms forwards;
+  /* Дві незалежні анімації на різних властивостях (stroke-dashoffset і
+     filter) — не конфліктують. orbitTrace: одноразовий reveal-домальовок
+     дуги. heroOrbitGlow: вічна пульсація світіння, старт одразу після
+     завершення reveal (3s ≈ 400ms delay + 2.2s тривалість + запас). */
+  animation: orbitTrace 2.2s var(--ease-editorial) 400ms forwards,
+    heroOrbitGlow 3.6s ease-in-out 3s infinite;
 }
 
 @keyframes orbitTrace {
   to {
     stroke-dashoffset: 0;
+  }
+}
+
+/* Пульсуюче світіння червоного сегмента — GPU/композитор-дешево:
+   тільки filter (drop-shadow), без зміни geometry/layout, blur-radius
+   у розумних межах (18→30px), не важкий repaint на весь екран, бо
+   обмежений маленьким SVG-елементом. */
+@keyframes heroOrbitGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 18px rgba(250, 59, 53, 0.55));
+  }
+  50% {
+    filter: drop-shadow(0 0 32px rgba(250, 59, 53, 0.9));
   }
 }
 
@@ -2996,8 +3077,10 @@ h3 {
   .hero__orbit path {
     animation: none !important;
     stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 18px rgba(250, 59, 53, 0.55)) !important;
   }
-  .hero__orbit-spin {
+  .hero__orbit-spin,
+  .hero__orbit-ring2-spin {
     animation: none !important;
     transform: none !important;
   }
