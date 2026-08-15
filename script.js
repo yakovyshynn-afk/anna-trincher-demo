@@ -41,7 +41,13 @@
       return;
     }
     document.body.classList.add("intro-lock");
-    var introDuration = window.innerWidth < 640 ? 1300 : 4400;
+    /* Власник: інтро забирає забагато часу. Скорочено ~50% на обох
+       брейкпоінтах (1300мс→650мс мобільний, 4400мс→2200мс десктоп) —
+       wordmark-wipe (480/900мс, styles.css) і надалі встигає дограти
+       з запасом до кінця вікна, орбітальне кільце-прогрес просто рухається
+       швидше (читає той самий --intro-duration нижче), skip-кнопка
+       лишається без змін. */
+    var introDuration = window.innerWidth < 640 ? 650 : 2200;
     /* Орбітальне кільце-прогрес (.intro__orbit-progress) читає цю
        CSS-змінну для своєї transition-duration (stroke-dashoffset) —
        воно заповнюється синхронно з реальним таймером інтро, а не за
@@ -377,6 +383,27 @@
      youtube.com для VideoModal (gaps.md розділ 3) — публічні відео
      офіційного каналу автоматично індексуються на music.youtube.com під
      тим самим ID, окремо на music.youtube.com цієї сесії не перевірялось. */
+  /* Власні монолінійні SVG-гліфи (той самий стиль, що social-rail —
+     viewBox 24, stroke:currentColor), не офіційні лого платформ.
+     Аудит-раунд полірування: раніше рядки StreamingSheet були чистим
+     текстом без жодного візуального ідентифікатора платформи. */
+  var PLATFORM_ICONS = {
+    spotify:
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">' +
+      '<path d="M5 15c4-2 10-2 14 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+      '<path d="M6.3 11.2c3.8-1.7 7.6-1.7 11.4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+      '<path d="M7.8 7.6c2.7-1 5.7-1 8.4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    apple:
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">' +
+      '<circle cx="8.3" cy="16.2" r="2.1" fill="currentColor"/>' +
+      '<circle cx="15.3" cy="14.6" r="2.1" fill="currentColor"/>' +
+      '<path d="M10.4 16.2V6.9L17.4 5.1v9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    youtube:
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">' +
+      '<rect x="2.4" y="6" width="19.2" height="12" rx="4" stroke="currentColor" stroke-width="1.6"/>' +
+      '<path d="M10.4 9.3 15.5 12 10.4 14.7Z" fill="currentColor"/></svg>'
+  };
+
   var APPLE_MUSIC_ARTIST_URL = "https://music.apple.com/ua/artist/анна-трінчер/1436704585";
   var TRACK_PLATFORMS = {
     "Маргарита": { youtubeId: "gAXU1Bvxngg", spotifyTrack: "4TlI6xqjE9pogjuJ2JlbZX" },
@@ -410,11 +437,16 @@
     var youtubeMusicUrl = info.youtubeId ? "https://music.youtube.com/watch?v=" + info.youtubeId : "https://music.youtube.com/channel/annatrincher";
     if (sheetListEl) {
       var links = [];
-      if (spotifyUrl) {
-        links.push('<a href="' + spotifyUrl + '" target="_blank" rel="noopener noreferrer">Spotify <small>Відкрити</small></a>');
+      function platformRow(url, icon, label) {
+        return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' +
+          '<span class="sheet__list-left"><span class="sheet__list-icon">' + icon + '</span><span>' + label + '</span></span>' +
+          '<small>Відкрити</small></a>';
       }
-      links.push('<a href="' + APPLE_MUSIC_ARTIST_URL + '" target="_blank" rel="noopener noreferrer">Apple Music <small>Відкрити</small></a>');
-      links.push('<a href="' + youtubeMusicUrl + '" target="_blank" rel="noopener noreferrer">YouTube Music <small>Відкрити</small></a>');
+      if (spotifyUrl) {
+        links.push(platformRow(spotifyUrl, PLATFORM_ICONS.spotify, "Spotify"));
+      }
+      links.push(platformRow(APPLE_MUSIC_ARTIST_URL, PLATFORM_ICONS.apple, "Apple Music"));
+      links.push(platformRow(youtubeMusicUrl, PLATFORM_ICONS.youtube, "YouTube Music"));
       sheetListEl.innerHTML = links.join("");
     }
     if (sheetNoteEl) {
@@ -606,6 +638,7 @@
   }
 
   document.querySelectorAll("[data-copy-link]").forEach(function (btn) {
+    var copiedTimer;
     btn.addEventListener("click", function () {
       var url = btn.getAttribute("data-copy-link");
       if (navigator.clipboard && url) {
@@ -613,6 +646,13 @@
           .writeText(url)
           .then(function () {
             showToast("Посилання скопійовано.");
+            /* Іконка ланцюжка морфиться в "check" на ту саму тривалість,
+               що й toast (2.4с) — styles.css .is-copied. */
+            btn.classList.add("is-copied");
+            window.clearTimeout(copiedTimer);
+            copiedTimer = window.setTimeout(function () {
+              btn.classList.remove("is-copied");
+            }, 2400);
           })
           .catch(function () {
             showToast("Не вдалося скопіювати посилання.");

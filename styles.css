@@ -424,10 +424,12 @@ h3 {
   transform: translateY(-2px);
 }
 
-/* Мобільний рілс-трафік: інтро скорочено (script.js introDuration ~1.3с),
-   тож wipe-анімація wordmark стиснута під новий таймлайн, а не обрізається
-   по живому на середині. Прогрес-лінія вже синхронізована автоматично
-   через --intro-duration (виставляється з JS), окремого правила не треба. */
+/* Мобільний рілс-трафік: інтро скорочено (script.js introDuration ~0.65с,
+   раніше ~1.3с — власник попросив ще коротше), тож wipe-анімація wordmark
+   стиснута під новий таймлайн (480мс завершується задовго до кінця
+   650мс-вікна), а не обрізається по живому на середині. Прогрес-лінія вже
+   синхронізована автоматично через --intro-duration (виставляється з JS),
+   окремого правила не треба. */
 @media (max-width: 639px) {
   .intro.is-playing .intro__mark img {
     animation-duration: 480ms;
@@ -489,6 +491,7 @@ h3 {
   font-size: 20px;
   letter-spacing: -0.02em;
   text-decoration: none;
+  color: var(--paper-50);
   border: 1px solid var(--line-on-dark);
   border-radius: var(--radius-pill);
   width: 44px;
@@ -497,6 +500,17 @@ h3 {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: border-color 220ms var(--ease-ui), color 220ms var(--ease-ui), transform 320ms var(--ease-ui);
+}
+
+/* Логотип-монограма — раніше статичне коло без жодного hover-стану
+   (генерик "шаблонний" вигляд, аудит-раунд полірування). Легкий
+   поворот+акцент замість банальної зміни кольору (CTA-05). */
+.site-header__mark:hover,
+.site-header__mark:focus-visible {
+  border-color: var(--signal-red);
+  color: var(--signal-red);
+  transform: rotate(-8deg) scale(1.06);
 }
 
 .site-header__nav {
@@ -537,8 +551,15 @@ h3 {
   transform: scaleX(1);
 }
 
+/* .site-header__cta раніше була суцільно статичною плашкою без жодного
+   hover-стану — контраст з рештою кнопок сайту (.btn), які всі мають
+   fill-sweep. Той самий прийом тут через ::before (без переструктурування
+   розмітки: isolation:isolate гарантує, що псевдоелемент з z-index:-1
+   лишається ПІД текстом, не над ним). */
 .site-header__cta {
   display: none;
+  position: relative;
+  isolation: isolate;
   text-decoration: none;
   background: var(--paper-50);
   color: var(--ink-950);
@@ -546,6 +567,29 @@ h3 {
   font-size: 13px;
   padding: 10px 22px;
   border-radius: var(--radius-pill);
+  transition: color 260ms var(--ease-ui);
+}
+
+.site-header__cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--signal-red);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 420ms var(--ease-ui);
+}
+
+.site-header__cta:hover,
+.site-header__cta:focus-visible {
+  color: var(--paper-50);
+}
+
+.site-header__cta:hover::before,
+.site-header__cta:focus-visible::before {
+  transform: scaleX(1);
 }
 
 .site-header__burger {
@@ -556,7 +600,18 @@ h3 {
   padding: 10px 20px;
   font-weight: 600;
   font-size: 13px;
+  transition: border-color 220ms var(--ease-ui), background 220ms var(--ease-ui), transform 160ms var(--ease-ui);
   min-height: 44px;
+}
+
+.site-header__burger:hover,
+.site-header__burger:focus-visible {
+  border-color: var(--paper-50);
+  background: rgba(246, 245, 241, 0.08);
+}
+
+.site-header__burger:active {
+  transform: scale(0.94);
 }
 
 @media (min-width: 1024px) {
@@ -601,6 +656,17 @@ h3 {
   padding: 10px 20px;
   min-height: 44px;
   font-weight: 600;
+  transition: border-color 220ms var(--ease-ui), background 220ms var(--ease-ui), transform 160ms var(--ease-ui);
+}
+
+.mobile-menu__close:hover,
+.mobile-menu__close:focus-visible {
+  border-color: var(--paper-50);
+  background: rgba(246, 245, 241, 0.08);
+}
+
+.mobile-menu__close:active {
+  transform: scale(0.94);
 }
 
 .mobile-menu nav {
@@ -610,13 +676,59 @@ h3 {
 }
 
 .mobile-menu nav a {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
   text-decoration: none;
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 9vw, 3rem);
   font-weight: 700;
   color: var(--paper-50);
   letter-spacing: -0.02em;
+  /* Раніше пункти меню з'являлись одразу разом з панеллю (просто текст без
+     власного руху) — тепер staggered reveal (MOT-01), той самий принцип,
+     що .reveal по решті сайту, синхронізовано з .is-open замість
+     IntersectionObserver. */
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 520ms var(--ease-out-expo), transform 520ms var(--ease-out-expo), color 220ms var(--ease-ui);
 }
+
+.mobile-menu nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: var(--signal-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 360ms var(--ease-ui);
+}
+
+.mobile-menu nav a:hover,
+.mobile-menu nav a:focus-visible {
+  color: var(--signal-red);
+}
+
+.mobile-menu nav a:hover::after,
+.mobile-menu nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.mobile-menu.is-open nav a {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mobile-menu.is-open nav a:nth-child(1) { transition-delay: 80ms; }
+.mobile-menu.is-open nav a:nth-child(2) { transition-delay: 130ms; }
+.mobile-menu.is-open nav a:nth-child(3) { transition-delay: 180ms; }
+.mobile-menu.is-open nav a:nth-child(4) { transition-delay: 230ms; }
+.mobile-menu.is-open nav a:nth-child(5) { transition-delay: 280ms; }
+.mobile-menu.is-open nav a:nth-child(6) { transition-delay: 330ms; }
+.mobile-menu.is-open nav a:nth-child(7) { transition-delay: 380ms; }
 
 .mobile-menu__ticket {
   margin-top: 32px;
@@ -628,6 +740,20 @@ h3 {
   font-weight: 700;
   padding: 14px 28px;
   border-radius: var(--radius-pill);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 520ms var(--ease-out-expo), transform 520ms var(--ease-out-expo), box-shadow 260ms var(--ease-ui);
+  transition-delay: 430ms;
+}
+
+.mobile-menu.is-open .mobile-menu__ticket {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mobile-menu__ticket:hover,
+.mobile-menu__ticket:focus-visible {
+  box-shadow: 0 14px 34px rgba(250, 59, 53, 0.4);
 }
 
 /* ===== БЛОК: HERO ===== */
@@ -1482,8 +1608,8 @@ h3 {
   border-left: 3px solid transparent;
   text-decoration: none;
   color: var(--paper-50);
-  transition: background var(--duration-fast) var(--ease-ui), padding-left var(--duration-fast) var(--ease-ui),
-    border-color var(--duration-fast) var(--ease-ui);
+  transition: background 180ms var(--ease-ui), padding-left 320ms var(--ease-ui),
+    border-color 260ms var(--ease-ui);
 }
 
 /* Явний, недвозначний hover/focus-стан на КОНКРЕТНОМУ рядку — фідбек
@@ -1532,12 +1658,33 @@ h3 {
   border-radius: var(--radius-pill);
 }
 
+/* "Квитки"/"Переглянути" були голим текстом без жодного напрямкового
+   натяку (аудит-раунд полірування) — border-drawn шеврон (не unicode-
+   гліф, §8) із власним зсувом на hover, не просто зміна кольору (CTA-05). */
 .tour-list .tour-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   font-weight: 700;
   color: var(--chrome-300);
   white-space: nowrap;
   transition: color var(--duration-fast) var(--ease-ui);
+}
+
+.tour-list .tour-arrow::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-top: 1.6px solid currentColor;
+  border-right: 1.6px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 320ms var(--ease-ui);
+}
+
+.tour-list a:hover .tour-arrow::after,
+.tour-list a:focus-visible .tour-arrow::after {
+  transform: rotate(45deg) translate(2px, -2px);
 }
 
 /* ===== БЛОК: DISCOGRAPHY RAIL ===== */
@@ -2023,7 +2170,16 @@ h3 {
   }
 }
 
+/* Раніше — суто текстова картка (border+lift, без іконки/акценту) —
+   найближче до "generic Bootstrap card" з усього сайту (аудит-раунд
+   полірування). Тепер: платформна іконка (ті самі гліфи, що social-rail),
+   кутова "зовнішнє посилання"-стрілка, і ambient-glow з кута на hover
+   (той самий accent-язик, що spotlight на DiscographyRail, без courser
+   tracking — фіксований кут, CSS-only). */
 .follow__card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   border: 1px solid var(--line-on-dark);
   border-radius: var(--radius-card);
   padding: 28px;
@@ -2031,15 +2187,71 @@ h3 {
   color: var(--paper-50);
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 18px;
   min-height: 168px;
   transition: border-color var(--duration-base) var(--ease-ui), transform var(--duration-base) var(--ease-ui);
+}
+
+.follow__card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -15%;
+  width: 65%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(250, 59, 53, 0.32), transparent 70%);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 420ms var(--ease-ui), transform 620ms var(--ease-ui);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .follow__card:hover,
 .follow__card:focus-visible {
   border-color: var(--paper-50);
   transform: translateY(-4px);
+}
+
+.follow__card:hover::before,
+.follow__card:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.follow__icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-on-dark);
+  border-radius: var(--radius-pill);
+  color: var(--chrome-300);
+  transition: border-color 300ms var(--ease-ui), color 300ms var(--ease-ui), transform 420ms var(--ease-ui);
+}
+
+.follow__card:hover .follow__icon,
+.follow__card:focus-visible .follow__icon {
+  border-color: var(--signal-red);
+  color: var(--signal-red);
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.follow__arrow {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  color: var(--chrome-300);
+  transition: transform 380ms var(--ease-ui), color 260ms var(--ease-ui);
+}
+
+.follow__card:hover .follow__arrow,
+.follow__card:focus-visible .follow__arrow {
+  transform: translate(3px, -3px);
+  color: var(--paper-50);
 }
 
 .follow__card .follow__name {
@@ -2192,13 +2404,59 @@ h3 {
   padding: 10px 20px;
   min-height: 44px;
   cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-ui), border-color var(--duration-fast) var(--ease-ui);
+  transition: color var(--duration-fast) var(--ease-ui), border-color var(--duration-fast) var(--ease-ui),
+    transform 260ms var(--ease-ui);
+}
+
+.site-footer__copy svg {
+  transition: transform 320ms var(--ease-ui);
 }
 
 .site-footer__copy:hover,
 .site-footer__copy:focus-visible {
   color: var(--paper-50);
   border-color: var(--paper-50);
+  transform: translateY(-2px);
+}
+
+.site-footer__copy:hover svg,
+.site-footer__copy:focus-visible svg {
+  transform: rotate(-14deg);
+}
+
+.site-footer__copy:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Успішне копіювання — ланцюжок морфиться у "check" (stroke-dashoffset
+   wipe), а не просто лишається статичним поки toast сам зникає (запит
+   аудиту: підняти й цю мікровзаємодію до "вау"-рівня). script.js додає
+   .is-copied на 2.4с, синхронно з toast-таймером. */
+.site-footer__copy .copy-icon__link {
+  transition: opacity 200ms var(--ease-ui);
+}
+
+.site-footer__copy .copy-icon__check {
+  opacity: 0;
+  /* Реальна довжина path'у ≈19.1 (виміряно), 24 з запасом для повного
+     wipe без "недомальованого" кінчика галочки. */
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  transition: opacity 120ms var(--ease-ui), stroke-dashoffset 360ms var(--ease-ui);
+}
+
+.site-footer__copy.is-copied {
+  color: var(--signal-red);
+  border-color: var(--signal-red);
+}
+
+.site-footer__copy.is-copied .copy-icon__link {
+  opacity: 0;
+}
+
+.site-footer__copy.is-copied .copy-icon__check {
+  opacity: 1;
+  stroke-dashoffset: 0;
 }
 
 .site-footer__legal {
@@ -2287,6 +2545,11 @@ h3 {
   font-size: 1.4rem;
 }
 
+/* Раніше — статичне коло без жодного hover/active-стану (аудит-раунд
+   полірування). "Закриваюча" афорданс-жестика: X обертається на 90°
+   (натяк на дію), рамка/фон світлішають окремим таймінгом (CTA-06 —
+   transform 320мс, border/background 200мс). :active — окремий стан
+   для тач (не залежить від hover). */
 .sheet__close {
   background: transparent;
   border: 1px solid var(--line-on-dark);
@@ -2299,6 +2562,18 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 320ms var(--ease-ui), border-color 200ms var(--ease-ui), background 200ms var(--ease-ui);
+}
+
+.sheet__close:hover,
+.sheet__close:focus-visible {
+  border-color: var(--paper-50);
+  background: rgba(246, 245, 241, 0.1);
+  transform: rotate(90deg);
+}
+
+.sheet__close:active {
+  transform: rotate(90deg) scale(0.9);
 }
 
 .sheet__list {
@@ -2311,6 +2586,7 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   min-height: 52px;
   padding: 0 16px;
   border-radius: 12px;
@@ -2318,18 +2594,69 @@ h3 {
   text-decoration: none;
   color: var(--paper-50);
   font-weight: 700;
-  transition: border-color var(--duration-fast) var(--ease-ui);
+  transition: border-color var(--duration-fast) var(--ease-ui), background 260ms var(--ease-ui);
 }
 
 .sheet__list a:hover,
 .sheet__list a:focus-visible {
   border-color: var(--paper-50);
+  background: rgba(246, 245, 241, 0.05);
+}
+
+/* Іконка-платформа — раніше рядки платформ (Spotify/Apple Music/YouTube
+   Music) були суто текстовими без жодного візуального ідентифікатора
+   (аудит-раунд полірування). Власні монолінійні SVG-гліфи (той самий
+   стиль, що social-rail), не офіційні лого. */
+.sheet__list-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sheet__list-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-on-dark);
+  border-radius: 50%;
+  color: var(--chrome-300);
+  transition: border-color 260ms var(--ease-ui), color 260ms var(--ease-ui), background 260ms var(--ease-ui);
+}
+
+.sheet__list a:hover .sheet__list-icon,
+.sheet__list a:focus-visible .sheet__list-icon {
+  border-color: var(--signal-red);
+  color: var(--signal-red);
+  background: rgba(250, 59, 53, 0.08);
 }
 
 .sheet__list a small {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
   font-weight: 500;
   color: var(--chrome-300);
   font-size: 12px;
+}
+
+.sheet__list a small::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-top: 1.4px solid currentColor;
+  border-right: 1.4px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 300ms var(--ease-ui);
+}
+
+.sheet__list a:hover small::after,
+.sheet__list a:focus-visible small::after {
+  transform: rotate(45deg) translate(2px, -2px);
 }
 
 .sheet__note {
@@ -2420,6 +2747,11 @@ h3 {
   white-space: nowrap;
 }
 
+/* Раніше — статичне коло без жодного hover/active-стану, і на close, і
+   на nav-стрілках (аудит-раунд полірування). Close отримує ту саму
+   90°-обертову афорданс-жестику, що .sheet__close/.video-modal__close;
+   nav-стрілки — напрямковий зсув + акцентний колір замість банальної
+   зміни фону (CTA-05). */
 .gallery-modal__close,
 .gallery-modal__nav {
   position: absolute;
@@ -2433,6 +2765,25 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 320ms var(--ease-ui), border-color 200ms var(--ease-ui), background 200ms var(--ease-ui), color 200ms var(--ease-ui);
+}
+
+.gallery-modal__close:hover,
+.gallery-modal__close:focus-visible {
+  border-color: var(--paper-50);
+  background: rgba(246, 245, 241, 0.1);
+  transform: rotate(90deg);
+}
+
+.gallery-modal__close:active {
+  transform: rotate(90deg) scale(0.9);
+}
+
+.gallery-modal__nav:hover,
+.gallery-modal__nav:focus-visible {
+  border-color: var(--signal-red);
+  color: var(--signal-red);
+  background: rgba(250, 59, 53, 0.08);
 }
 
 .gallery-modal__close {
@@ -2446,10 +2797,28 @@ h3 {
   transform: translateY(-50%);
 }
 
+.gallery-modal__nav--prev:hover,
+.gallery-modal__nav--prev:focus-visible {
+  transform: translate(-4px, -50%);
+}
+
+.gallery-modal__nav--prev:active {
+  transform: translate(-4px, -50%) scale(0.92);
+}
+
 .gallery-modal__nav--next {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.gallery-modal__nav--next:hover,
+.gallery-modal__nav--next:focus-visible {
+  transform: translate(4px, -50%);
+}
+
+.gallery-modal__nav--next:active {
+  transform: translate(4px, -50%) scale(0.92);
 }
 
 /* ===== БЛОК: VIDEO MODAL ===== */
@@ -2501,6 +2870,18 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 320ms var(--ease-ui), border-color 200ms var(--ease-ui), background 200ms var(--ease-ui);
+}
+
+.video-modal__close:hover,
+.video-modal__close:focus-visible {
+  border-color: var(--paper-50);
+  background: rgba(246, 245, 241, 0.1);
+  transform: rotate(90deg);
+}
+
+.video-modal__close:active {
+  transform: rotate(90deg) scale(0.9);
 }
 
 .video-modal__fallback {
@@ -2534,11 +2915,27 @@ h3 {
   color: var(--ink-950);
   font-weight: 700;
   font-size: 13px;
-  padding: 12px 22px;
+  padding: 12px 22px 12px 18px;
   border-radius: var(--radius-pill);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   z-index: 95;
   transition: transform var(--duration-base) var(--ease-ui), opacity var(--duration-base) var(--ease-ui),
     visibility var(--duration-base);
+}
+
+/* Раніше — суто текстовий білий pill без жодного фірмового акценту
+   (аудит-раунд полірування). Крапка-індикатор кольору бренду з коротким
+   pulse при появі — CSS-only, без зміни textContent у script.js. */
+.toast::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 9px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background: var(--signal-red);
+  box-shadow: 0 0 0 0 rgba(250, 59, 53, 0.55);
 }
 
 .toast.is-visible {
@@ -2546,6 +2943,28 @@ h3 {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+}
+
+.toast.is-visible::before {
+  animation: toastPulse 900ms var(--ease-out-expo) 120ms;
+}
+
+@keyframes toastPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(250, 59, 53, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(250, 59, 53, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 59, 53, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast.is-visible::before {
+    animation: none;
+  }
 }
 
 /* ===== БЛОК: REVEAL-ON-SCROLL =====
@@ -2584,6 +3003,12 @@ h3 {
   }
   .next-show__status::before {
     animation: none !important;
+  }
+  .mobile-menu nav a,
+  .mobile-menu__ticket {
+    transition: opacity 150ms linear !important;
+    transition-delay: 0ms !important;
+    transform: none !important;
   }
 }
 
