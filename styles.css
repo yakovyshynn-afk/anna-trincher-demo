@@ -956,14 +956,17 @@ h3 {
 
 /* Другий, тонший пунктирний контур — суто декоративний шар глибини.
    Менший радіус за головний трек (148 проти 176), пунктир робить власне
-   обертання видимим (суцільне симетричне коло рухом непомітне). Слабка
-   непрозорість — не конкурує з головним червоним сегментом за увагу. */
+   обертання видимим (суцільне симетричне коло рухом непомітне). Підняте
+   за прямим запитом власника ("не бачу змін" на попередніх стриманих
+   значеннях) — товщий штрих і крупніший пунктир, непрозорість майже
+   подвоєна, лишається другорядним шаром (не конкурує з червоним
+   сегментом кольором, лише присутністю). */
 .hero__orbit-ring2 {
   fill: none;
   stroke: var(--chrome-300, #c8cbd0);
-  stroke-width: 1;
-  stroke-dasharray: 1 13;
-  opacity: 0.4;
+  stroke-width: 1.75;
+  stroke-dasharray: 3 10;
+  opacity: 0.75;
 }
 
 .hero__orbit-ring2-spin {
@@ -990,7 +993,7 @@ h3 {
   stroke: var(--signal-red);
   stroke-width: 2;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 18px rgba(250, 59, 53, 0.55));
+  filter: drop-shadow(0 0 22px rgba(250, 59, 53, 0.65));
   stroke-dasharray: 900;
   stroke-dashoffset: 900;
 }
@@ -1011,16 +1014,18 @@ h3 {
 }
 
 /* Пульсуюче світіння червоного сегмента — GPU/композитор-дешево:
-   тільки filter (drop-shadow), без зміни geometry/layout, blur-radius
-   у розумних межах (18→30px), не важкий repaint на весь екран, бо
-   обмежений маленьким SVG-елементом. */
+   тільки filter (drop-shadow), без зміни geometry/layout, обмежений
+   маленьким SVG-елементом (не важкий repaint на весь екран). Розмах
+   суттєво піднятий за прямим запитом власника (попередні 18→32px /
+   0.55→0.9 читались як "ледь помітне мерехтіння") — тепер 22→52px і
+   майже повна непрозорість на піку, "дихання" видно неозброєним оком. */
 @keyframes heroOrbitGlow {
   0%,
   100% {
-    filter: drop-shadow(0 0 18px rgba(250, 59, 53, 0.55));
+    filter: drop-shadow(0 0 22px rgba(250, 59, 53, 0.65));
   }
   50% {
-    filter: drop-shadow(0 0 32px rgba(250, 59, 53, 0.9));
+    filter: drop-shadow(0 0 52px rgba(250, 59, 53, 1));
   }
 }
 
@@ -3077,7 +3082,7 @@ h3 {
   .hero__orbit path {
     animation: none !important;
     stroke-dashoffset: 0;
-    filter: drop-shadow(0 0 18px rgba(250, 59, 53, 0.55)) !important;
+    filter: drop-shadow(0 0 22px rgba(250, 59, 53, 0.65)) !important;
   }
   .hero__orbit-spin,
   .hero__orbit-ring2-spin {
