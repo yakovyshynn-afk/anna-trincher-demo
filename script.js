@@ -703,6 +703,97 @@
     nextShowSection.classList.add("is-in");
   }
 
+  /* ===== БЛОК: TOUR DATES — автоматично приховати минулі концерти =====
+     Чиста client-side логіка, без бекенду/CMS: при кожному завантаженні
+     сторінки порівнює `data-date` (ISO, YYYY-MM-DD) кожної дати туру з
+     РЕАЛЬНОЮ поточною датою пристрою відвідувача (`new Date()`) — не
+     захардкоджена дата, сайт "живе" сам собою з часом. Порівняння —
+     по календарній даті в локальному часовому поясі відвідувача
+     (навмисне спрощення: концерти в різних містах/країнах (Лондон),
+     складна timezone-логіка не потрібна для цього масштабу). */
+  (function initTourDates() {
+    var todayISO = (function () {
+      var d = new Date();
+      var y = d.getFullYear();
+      var m = String(d.getMonth() + 1).padStart(2, "0");
+      var day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    })();
+    var tourList = document.getElementById("tourList");
+    var tourListEmpty = document.getElementById("tourListEmpty");
+    var nextShowHero = document.getElementById("nextShowHero");
+
+    if (tourList) {
+      var items = Array.prototype.slice.call(tourList.querySelectorAll("li[data-date]"));
+      var upcoming = [];
+      items.forEach(function (li) {
+        var date = li.getAttribute("data-date");
+        if (date < todayISO) {
+          li.setAttribute("hidden", "");
+        } else {
+          upcoming.push({ el: li, date: date });
+        }
+      });
+      upcoming.sort(function (a, b) {
+        return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
+      });
+
+      /* Порожній стан: усі дати зі списку минули. "Переглянути всі 12 дат"
+         li не має data-date, тому не потрапляє в items/upcoming — не
+         рахуємо його як подію, залишаємо як є (посилання на Karabas
+         лишається коректним незалежно від того, скільки дат вже минуло). */
+      if (tourListEmpty) {
+        tourListEmpty.hidden = upcoming.length > 0;
+      }
+
+      /* Featured NextShow (Палац спорту) вже минув — підміняємо featured-
+         блок на найближчу дату, що лишилась у списку. Ціна/hint —
+         специфічні для Палацу спорту факти, тому НЕ переносяться на іншу
+         залу (немає підтверджених даних) — замінюються на нейтральний,
+         невигаданий текст. Дата/місто/посилання беруться напряму з того ж
+         рядка .tour-list — це ті самі перевірені факти, що вже на сторінці. */
+      if (nextShowHero) {
+        var heroDate = nextShowHero.getAttribute("data-date");
+        if (heroDate && heroDate < todayISO) {
+          var statusEl = nextShowHero.querySelector(".next-show__status");
+          var dateEl = nextShowHero.querySelector(".next-show__date span");
+          var placeEl = nextShowHero.querySelector(".next-show__place");
+          var priceEl = nextShowHero.querySelector(".next-show__price");
+          var hintEl = nextShowHero.querySelector(".next-show__hint");
+          var actionLink = nextShowHero.querySelector(".btn--ticket");
+          var actionLabel = actionLink ? actionLink.querySelector(".btn__label") : null;
+
+          if (upcoming.length > 0) {
+            var next = upcoming[0];
+            var linkEl = next.el.querySelector("a");
+            var cityEl = next.el.querySelector(".tour-city");
+            var dateText = next.el.querySelector(".tour-date")
+              ? next.el.querySelector(".tour-date").textContent.trim()
+              : next.date;
+            var cityText = cityEl ? cityEl.textContent.trim() : "";
+
+            if (statusEl) statusEl.textContent = "Найближча дата туру";
+            if (dateEl) dateEl.textContent = dateText;
+            if (placeEl) placeEl.innerHTML = "<strong>" + cityText + "</strong>";
+            if (priceEl) priceEl.hidden = true;
+            if (hintEl) hintEl.textContent = "Деталі та ціна квитків — на сторінці партнера.";
+            if (actionLink && linkEl) actionLink.href = linkEl.href;
+            if (actionLabel) actionLabel.textContent = "Придбати квитки";
+          } else {
+            /* Усі дати туру, включно з featured, уже минули — акуратний
+               порожній стан замість показу минулої події як "найближчої". */
+            if (statusEl) statusEl.textContent = "Дати туру оновлюються";
+            if (dateEl) dateEl.textContent = "";
+            if (placeEl) placeEl.textContent = "Нові дати туру скоро з'являться. Слідкуйте за оновленнями в Instagram.";
+            if (priceEl) priceEl.hidden = true;
+            if (hintEl) hintEl.hidden = true;
+            if (actionLink) actionLink.setAttribute("hidden", "");
+          }
+        }
+      }
+    }
+  })();
+
   /* Спільна перевірка pointer:fine + hover:hover для десктопних-only
      мікровзаємодій нижче (magnetic buttons, tilt+spotlight карток). */
   var supportsFineHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;

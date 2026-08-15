@@ -1773,6 +1773,19 @@ h3 {
   transform: rotate(45deg) translate(2px, -2px);
 }
 
+/* Порожній стан .tour-list — на випадок, коли всі дати туру вже минули
+   (script.js, БЛОК: TOUR DATES). Показується замість обрубаного порожнього
+   списку, без вигаданих фактів. */
+.tour-list__empty {
+  margin-top: 16px;
+  padding: 20px 16px;
+  border: 1px dashed var(--line-on-dark-soft);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--chrome-300);
+  text-align: center;
+}
+
 /* ===== БЛОК: DISCOGRAPHY RAIL ===== */
 /* Власник: "кожна картка повинна бути шириною в повний розмір обкладинки,
    стиснута і обрізана" — прочитано як (а): картка вже сама завширшки точно
