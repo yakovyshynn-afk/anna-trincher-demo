@@ -1314,6 +1314,115 @@ h3 {
    fixed-елементів на мобільному, gutter вужчий) — окремих правил
    позиції не треба, var(--gutter) вже адаптивний по брейкпоінтах. */
 
+/* ===== БЛОК: SCROLL PROGRESS =====
+   Тонка (3px) лінія вгорі viewport, вище хедера (z-index 65 > .site-header
+   60), заповнюється по мірі скролу сторінки. script.js оновлює лише
+   transform:scaleX на #scrollProgressBar (rAF-throttled) — GPU-дешево,
+   без анімації width/top/left. Working навіть на мобільному (індикатор
+   позиції, а не декоративний рух — не залежить від hover). */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 65;
+  background: transparent;
+  pointer-events: none;
+}
+
+.scroll-progress__bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--signal-red), var(--ember-500));
+  will-change: transform;
+}
+
+/* ===== БЛОК: CUSTOM CURSOR + CURSOR LABEL =====
+   Десктоп-only — script.js додає .has-cursor-ghost на <body> лише коли
+   pointer:fine + hover:hover + !prefers-reduced-motion (той самий гейт,
+   що й magnetic buttons/tilt), тому на touch .cursor-ghost лишається
+   position:fixed поза екраном (transform не оновлюється) і НЕ приховує
+   нативний курсор — селектор cursor:none нижче теж сфокусований на класі,
+   доданому лише JS, тому CSS сам собою нічого не приховує на пристроях,
+   де JS не спрацював/вимкнений. Лише крапка за замовчуванням; над
+   медіа-елементами (data-cursor-label в index.html) розширюється в
+   овальний чіп із текстовим лейблом. */
+.cursor-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: var(--radius-pill);
+  background: var(--signal-red);
+  pointer-events: none;
+  z-index: 150;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0;
+  transform: translate3d(-100px, -100px, 0);
+  transition: opacity 200ms var(--ease-ui), width 280ms var(--ease-ui), height 280ms var(--ease-ui),
+    margin 280ms var(--ease-ui), padding 280ms var(--ease-ui), background-color 280ms var(--ease-ui),
+    border-color 280ms var(--ease-ui);
+  will-change: transform;
+}
+
+.cursor-ghost.is-active {
+  opacity: 1;
+}
+
+.cursor-ghost.is-pressed {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+}
+
+.cursor-ghost.is-media {
+  width: auto;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  background: var(--ink-950);
+  border: 1px solid var(--line-on-dark);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.cursor-ghost.is-media.is-pressed {
+  width: auto;
+  height: 40px;
+  margin: -20px 0 0 -22px;
+}
+
+.cursor-ghost__label {
+  opacity: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper-50);
+  white-space: nowrap;
+  transition: opacity 180ms var(--ease-ui) 60ms;
+}
+
+.cursor-ghost.is-media .cursor-ghost__label {
+  opacity: 1;
+}
+
+body.has-cursor-ghost,
+body.has-cursor-ghost a,
+body.has-cursor-ghost button {
+  cursor: none;
+}
+
 /* ===== БЛОК: КНОПКИ ===== */
 .btn {
   position: relative;
@@ -1449,6 +1558,29 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  will-change: transform;
+}
+
+/* Tilt+spotlight (script.js, БЛОК: TILT + SPOTLIGHT) керує цим елементом
+   на desktop hover — той самий рецепт, що й .rail__card/.video__card,
+   портований на найважливішу обкладинку сторінки за прямим запитом
+   власника (єдина featured-картка без ефекту серед 4 rail-секцій).
+   .featured__card уже несе клас .reveal (одноразовий fade/translateY
+   вхід) — .reveal визначає transition для transform у 700ms, що зробило
+   б курсорний tilt "гумовим"/загальмованим. .featured__card.is-in
+   (вища специфічність, ніж сам .reveal) перевизначає transition ЛИШЕ
+   для transform на швидший 300ms, той самий cubic-bezier, що й
+   .rail__card/.video__card — застосовується вже ПІСЛЯ того, як
+   одноразовий reveal-вхід відбувся (is-in ставиться назавжди
+   IntersectionObserver'ом), тому entrance-анімація не постраждала. */
+.featured__card.is-in {
+  transition: opacity 700ms var(--ease-out-expo) var(--d, 0ms), transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow var(--duration-base) var(--ease-ui);
+}
+
+.featured__card:hover,
+.featured__card:focus-within {
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4);
 }
 
 /* Реальна обкладинка «Маргарита» (assets/covers/margaryta.webp) — object-fit:
@@ -1476,6 +1608,25 @@ h3 {
   object-fit: contain;
   background: rgba(8, 9, 11, 0.3);
   border-radius: calc(var(--radius-card) - 6px);
+}
+
+/* Spotlight — той самий --x/--y рецепт, що й .rail__spotlight/
+   .video__card-spotlight (script.js встановлює координати курсора
+   відносно .featured__card на mousemove). Ширший радіус (360px), бо
+   featured-картка помітно більша за rail-картки. */
+.featured__spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(360px circle at var(--x, 50%) var(--y, 50%), rgba(246, 245, 241, 0.22), transparent 68%);
+  transition: opacity var(--duration-fast) var(--ease-ui);
+}
+
+.featured__card:hover .featured__spotlight,
+.featured__card:focus-within .featured__spotlight {
+  opacity: 1;
 }
 
 .featured__card::after {
@@ -1598,6 +1749,12 @@ h3 {
   }
 }
 
+/* Кінетична дата: контейнер сам "виростає до масштабу плаката" (scale
+   0.8→1 + opacity, той самий IntersectionObserver-тригер .next-show.is-in,
+   що вже рухає .next-show__date span знизу) — два незалежні transform на
+   різних елементах (контейнер scale, span translateY), тому не
+   конфліктують у одному transform-ланцюжку. GPU-дешево (transform/opacity
+   лише). */
 .next-show__date {
   position: relative;
   z-index: 1;
@@ -1607,6 +1764,15 @@ h3 {
   line-height: 0.84;
   letter-spacing: -0.02em;
   overflow: hidden;
+  transform: scale(0.8);
+  opacity: 0;
+  transform-origin: left center;
+  transition: transform 900ms var(--ease-out-expo), opacity 900ms var(--ease-out-expo);
+}
+
+.next-show.is-in .next-show__date {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .next-show__date span {
@@ -1711,6 +1877,51 @@ h3 {
 .tour-list a:hover .tour-arrow,
 .tour-list a:focus-visible .tour-arrow {
   color: var(--signal-red);
+}
+
+/* "City ambient" — рядок легко "оживає" тінтованим градієнтом при
+   hover/focus (brief-manus.md §9.2 мікровзаємодія №9 "City ambient
+   swap"), поверх уже наявного .tour-list a:hover фону вище. Без окремих
+   зображень міст (жодного low-res asset на кожне місто немає) — це
+   рівномірний, але РІЗНИЙ per-рядок відтінок у межах наявної фірмової
+   палітри (nth-child цикл на 4), що робить список менш "календарним" і
+   більш живим. Лише opacity/background на ::before-псевдоелементі —
+   GPU-дешево, не займає layout. */
+.tour-list a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 320ms var(--ease-ui);
+  pointer-events: none;
+}
+
+.tour-list a:hover::before,
+.tour-list a:focus-visible::before {
+  opacity: 1;
+}
+
+.tour-list li:nth-child(4n + 1) a::before {
+  background: linear-gradient(120deg, rgba(250, 59, 53, 0.16), transparent 72%);
+}
+
+.tour-list li:nth-child(4n + 2) a::before {
+  background: linear-gradient(120deg, rgba(255, 116, 38, 0.15), transparent 72%);
+}
+
+.tour-list li:nth-child(4n + 3) a::before {
+  background: linear-gradient(120deg, rgba(23, 198, 210, 0.12), transparent 72%);
+}
+
+.tour-list li:nth-child(4n + 4) a::before {
+  background: linear-gradient(120deg, rgba(141, 16, 35, 0.22), transparent 72%);
+}
+
+.tour-list a > * {
+  position: relative;
+  z-index: 1;
 }
 
 .tour-list .tour-date {
@@ -2191,9 +2402,46 @@ h3 {
   color: var(--signal-red);
 }
 
+/* "Сяє як світло на металі" (brief-manus.md §9.3 WOW-момент №8) —
+   масковано-градієнтний text-reveal: смуга світлішого відтінку "проходить"
+   по заголовку один раз, коли .story__item отримує .is-in (той самий
+   IntersectionObserver .reveal-тригер, що вже рухає весь блок; --d —
+   той самий stagger-офсет, що й у .reveal). Обидва кольори в градієнті —
+   вже наявні у палітрі (paper-50/chrome-300), тому до/після анімації
+   заголовок лишається повністю читабельним звичайним світлим текстом —
+   це не opacity-маска, а рух відтінку, тож нема ризику "зникання" тексту
+   якщо анімація з якоїсь причини не спрацює. Лише background-position —
+   GPU-прийнятно для короткого one-shot заголовка (не scroll-linked loop). */
 .story__item h3 {
   font-size: clamp(1.3rem, 3vw, 1.8rem);
   margin-bottom: 8px;
+  background-image: linear-gradient(
+    100deg,
+    var(--paper-50) 0%,
+    var(--paper-50) 38%,
+    var(--chrome-300) 46%,
+    var(--paper-50) 54%,
+    var(--paper-50) 100%
+  );
+  background-size: 260% 100%;
+  background-position: 200% 0;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: var(--paper-50);
+  -webkit-text-fill-color: transparent;
+}
+
+.story__item.is-in h3 {
+  animation: storyShine 1500ms var(--ease-editorial) var(--d, 0ms) 1 forwards;
+}
+
+@keyframes storyShine {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
 }
 
 .story__item p {
@@ -2236,7 +2484,8 @@ h3 {
   border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--ink-800);
-  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow var(--duration-base) var(--ease-ui);
+  will-change: transform;
 }
 
 .gallery__cover {
@@ -2249,12 +2498,36 @@ h3 {
 
 .gallery__tile:hover,
 .gallery__tile:focus-visible {
+  /* Fallback для keyboard-фокусу/touch, де JS mousemove-tilt ніколи не
+     спрацьовує (той самий патерн, що й .rail__card/.video__card:
+     inline transform з JS перебиває це на mousemove, але tab-фокус
+     лишається з тим самим підйомом). */
   transform: translateY(-6px);
+  box-shadow: 0 28px 54px rgba(0, 0, 0, 0.4);
 }
 
 .gallery__tile:hover .gallery__cover,
 .gallery__tile:focus-visible .gallery__cover {
   transform: scale(1.06);
+}
+
+/* Spotlight — той самий --x/--y рецепт tilt+spotlight, що й
+   DiscographyRail/VideoRail (script.js, БЛОК: TILT + SPOTLIGHT), тепер і
+   на GalleryRail — четверта й остання з горизонтальних rail-секцій, що
+   лишалась без ефекту (запит власника: консистентність між усіма 4). */
+.gallery__spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(200px circle at var(--x, 50%) var(--y, 50%), rgba(246, 245, 241, 0.28), transparent 68%);
+  transition: opacity var(--duration-fast) var(--ease-ui);
+}
+
+.gallery__tile:hover .gallery__spotlight,
+.gallery__tile:focus-visible .gallery__spotlight {
+  opacity: 1;
 }
 
 /* ===== БЛОК: FOLLOW ===== */
@@ -3110,6 +3383,27 @@ h3 {
     transition: opacity 150ms linear !important;
     transition-delay: 0ms !important;
     transform: none !important;
+  }
+  /* Дванадцятий/фінальний раунд полірування: кінетична дата, story-shine,
+     custom cursor — миттєвий статичний стан замість руху. */
+  .next-show__date {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+  .story__item h3 {
+    animation: none !important;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+    color: var(--paper-50) !important;
+  }
+  .cursor-ghost {
+    display: none !important;
+  }
+  body.has-cursor-ghost,
+  body.has-cursor-ghost a,
+  body.has-cursor-ghost button {
+    cursor: auto !important;
   }
 }
 

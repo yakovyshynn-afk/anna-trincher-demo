@@ -161,6 +161,15 @@
   <button type="button" class="intro__skip" id="introSkip">Пропустити вступ</button>
 </div>
 
+<!-- ===== БЛОК: SCROLL PROGRESS =====
+     Тонка (3px) лінія вгорі viewport, заповнюється по мірі скролу
+     сторінки (transform:scaleX, GPU-дешево, без анімації top/left/width).
+     script.js (БЛОК: SCROLL PROGRESS) оновлює --progress через
+     requestAnimationFrame-throттлінг. -->
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true">
+  <span class="scroll-progress__bar" id="scrollProgressBar"></span>
+</div>
+
 <!-- ===== БЛОК: ХЕДЕР ===== -->
 <header class="site-header" id="siteHeader">
   <div class="container site-header__inner">
@@ -322,8 +331,9 @@
   <section class="section featured" id="featured-release">
     <div class="container">
       <div class="featured__grid">
-        <div class="featured__card reveal">
+        <div class="featured__card reveal" data-cursor-label="Слухати">
           <img class="featured__cover" src="assets/covers/margaryta.webp" alt="Обкладинка синглу «Маргарита», Анна Трінчер" loading="lazy" width="420" height="420">
+          <span class="featured__spotlight" aria-hidden="true"></span>
           <p class="featured__title">Маргарита</p>
           <p class="featured__meta">Останній реліз&nbsp;— 15&nbsp;липня 2026</p>
         </div>
@@ -488,7 +498,7 @@
              «Слухати» відкриває StreamingSheet із назвою саме цього треку; «Кліп»
              відкриває VideoModal саме з цим відео (усі 10 YouTube ID звірені вручну
              напряму на youtube.com, gaps.md розділ 4). -->
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/margaryta.webp" alt="Обкладинка синглу «Маргарита», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2026</p><p class="rail__title">Маргарита</p></div>
@@ -497,7 +507,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="gAXU1Bvxngg" data-video-title="Маргарита">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/tvoya-mama.webp" alt="Обкладинка синглу «Твоя мама», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2026</p><p class="rail__title">Твоя мама</p></div>
@@ -506,7 +516,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/vynom-tekla.webp" alt="Обкладинка синглу «Вином текла», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">Вином текла</p></div>
@@ -515,7 +525,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/no-cocaina.webp" alt="Обкладинка синглу «No cocaina», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">No cocaina</p></div>
@@ -524,7 +534,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/pivonii.webp" alt="Обкладинка синглу «Півонії», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">Півонії</p></div>
@@ -533,7 +543,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/zirochka-palay.webp" alt="Обкладинка синглу «Зірочка палай», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2025</p><p class="rail__title">Зірочка палай</p></div>
@@ -542,7 +552,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/tresh.webp" alt="Обкладинка синглу «Треш», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2024</p><p class="rail__title">Треш</p></div>
@@ -551,7 +561,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/bar-za-barom.webp" alt="Обкладинка синглу «Бар за баром», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2024</p><p class="rail__title">Бар за баром</p></div>
@@ -560,7 +570,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/ochi.webp" alt="Обкладинка синглу «Очі», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2023</p><p class="rail__title">Очі</p></div>
@@ -569,7 +579,7 @@
             <button type="button" class="rail__link rail__link--clip" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі">Кліп</button>
           </div>
         </article>
-        <article class="rail__card" role="listitem">
+        <article class="rail__card" data-cursor-label="Слухати" role="listitem">
           <img class="rail__cover" src="assets/covers/koloski.webp" alt="Обкладинка синглу «Колоски», Анна Трінчер" loading="lazy" width="420" height="420">
           <span class="rail__spotlight" aria-hidden="true"></span>
           <div class="rail__info"><p class="rail__year">2023</p><p class="rail__title">Колоски</p></div>
@@ -609,31 +619,31 @@
            хронологічний (найновіший → найстаріший, той самий принцип, що
            й DiscographyRail), «Маргарита» — окремо featured вище. -->
       <div class="rail video__rail reveal" role="list" aria-label="Кліпи Анни Трінчер" style="--d:120ms">
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама" aria-label="Дивитися кліп «Твоя мама»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="ENBOo1323vo" data-video-title="Твоя мама" aria-label="Дивитися кліп «Твоя мама»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/ENBOo1323vo/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Твоя мама</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла" aria-label="Дивитися кліп «Вином текла»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="D1l6Wp2pP_8" data-video-title="Вином текла" aria-label="Дивитися кліп «Вином текла»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/D1l6Wp2pP_8/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Вином текла</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina" aria-label="Дивитися кліп «No cocaina»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="o6QtsXivJ9w" data-video-title="No cocaina" aria-label="Дивитися кліп «No cocaina»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/o6QtsXivJ9w/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>No cocaina</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії" aria-label="Дивитися кліп «Півонії»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="kslh7pTCrQo" data-video-title="Півонії" aria-label="Дивитися кліп «Півонії»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/kslh7pTCrQo/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Півонії</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай" aria-label="Дивитися кліп «Зірочка палай»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="CgYRiz9MXUk" data-video-title="Зірочка палай" aria-label="Дивитися кліп «Зірочка палай»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/CgYRiz9MXUk/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Зірочка палай</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш" aria-label="Дивитися кліп «Треш»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="a8zgbf9cLEY" data-video-title="Треш" aria-label="Дивитися кліп «Треш»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/a8zgbf9cLEY/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Треш</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром" aria-label="Дивитися кліп «Бар за баром»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="eazVVV0-YWk" data-video-title="Бар за баром" aria-label="Дивитися кліп «Бар за баром»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/eazVVV0-YWk/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Бар за баром</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі" aria-label="Дивитися кліп «Очі»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="Dksj1wxC7rg" data-video-title="Очі" aria-label="Дивитися кліп «Очі»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/Dksj1wxC7rg/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Очі</span>
         </button>
-        <button type="button" class="video__card" role="listitem" data-open-video data-video-id="yKmE2MHGjG8" data-video-title="Колоски" aria-label="Дивитися кліп «Колоски»">
+        <button type="button" class="video__card" data-cursor-label="Дивитися" role="listitem" data-open-video data-video-id="yKmE2MHGjG8" data-video-title="Колоски" aria-label="Дивитися кліп «Колоски»">
           <img class="video__card-poster" src="https://i.ytimg.com/vi/yKmE2MHGjG8/maxresdefault.jpg" alt="" loading="lazy"><span class="video__card-spotlight" aria-hidden="true"></span><span>Колоски</span>
         </button>
       </div>
@@ -716,41 +726,53 @@
            (один рядок), ефектно (нативний touch-скрол), без "довгого
            блоку по висоті сторінки". -->
       <div class="rail gallery__rail reveal" role="list" aria-label="Фотогалерея Анни Трінчер">
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-02-circle-sing.webp" data-caption="Кола світла — виступ" aria-label="Відкрити фото: кола світла — виступ">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-02-circle-sing.webp" data-caption="Кола світла — виступ" aria-label="Відкрити фото: кола світла — виступ">
           <img class="gallery__cover" src="assets/gallery/gallery-02-circle-sing.webp" alt="Анна Трінчер виступає на сцені в підсвіченому колі" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-01-stage-band.webp" data-caption="На сцені з гуртом" aria-label="Відкрити фото: на сцені з гуртом">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-01-stage-band.webp" data-caption="На сцені з гуртом" aria-label="Відкрити фото: на сцені з гуртом">
           <img class="gallery__cover" src="assets/gallery/gallery-01-stage-band.webp" alt="Анна Трінчер на сцені з гуртом, драматичне червоне світло" loading="lazy" width="900" height="1199">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-05-portrait-glam.webp" data-caption="За лаштунками" aria-label="Відкрити фото: за лаштунками">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-05-portrait-glam.webp" data-caption="За лаштунками" aria-label="Відкрити фото: за лаштунками">
           <img class="gallery__cover" src="assets/gallery/gallery-05-portrait-glam.webp" alt="Портрет Анни Трінчер за лаштунками, сценічний костюм" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-04-flame-silhouette.webp" data-caption="Вогняний фінал" aria-label="Відкрити фото: вогняний фінал">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-04-flame-silhouette.webp" data-caption="Вогняний фінал" aria-label="Відкрити фото: вогняний фінал">
           <img class="gallery__cover" src="assets/gallery/gallery-04-flame-silhouette.webp" alt="Силует Анни Трінчер на тлі вогняного сценічного ефекту" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-03-circle-point.webp" data-caption="Енергія залу" aria-label="Відкрити фото: енергія залу">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-03-circle-point.webp" data-caption="Енергія залу" aria-label="Відкрити фото: енергія залу">
           <img class="gallery__cover" src="assets/gallery/gallery-03-circle-point.webp" alt="Анна Трінчер на сцені в динамічному русі до глядачів" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-06-portrait-sparkle.webp" data-caption="Сяйво кристалів" aria-label="Відкрити фото: сяйво кристалів">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-06-portrait-sparkle.webp" data-caption="Сяйво кристалів" aria-label="Відкрити фото: сяйво кристалів">
           <img class="gallery__cover" src="assets/gallery/gallery-06-portrait-sparkle.webp" alt="Портрет Анни Трінчер у сценічному костюмі з кристалами" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-07-seated-red.webp" data-caption="Червоний кадр" aria-label="Відкрити фото: червоний кадр">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-07-seated-red.webp" data-caption="Червоний кадр" aria-label="Відкрити фото: червоний кадр">
           <img class="gallery__cover" src="assets/gallery/gallery-07-seated-red.webp" alt="Анна Трінчер на сцені, редакційний кадр на червоному тлі" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-08-dance-pose.webp" data-caption="У русі" aria-label="Відкрити фото: у русі">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-08-dance-pose.webp" data-caption="У русі" aria-label="Відкрити фото: у русі">
           <img class="gallery__cover" src="assets/gallery/gallery-08-dance-pose.webp" alt="Анна Трінчер у динамічній сценічній позі" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-09-backstage-robe.webp" data-caption="Тиша перед виходом" aria-label="Відкрити фото: тиша перед виходом">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-09-backstage-robe.webp" data-caption="Тиша перед виходом" aria-label="Відкрити фото: тиша перед виходом">
           <img class="gallery__cover" src="assets/gallery/gallery-09-backstage-robe.webp" alt="Анна Трінчер за лаштунками перед виступом" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-10-golden-portrait.webp" data-caption="Золоте світло" aria-label="Відкрити фото: золоте світло">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-10-golden-portrait.webp" data-caption="Золоте світло" aria-label="Відкрити фото: золоте світло">
           <img class="gallery__cover" src="assets/gallery/gallery-10-golden-portrait.webp" alt="Портрет Анни Трінчер у теплому золотому сценічному світлі" loading="lazy" width="900" height="1199">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-11-bw-performance.webp" data-caption="Чорно-біле — сцена" aria-label="Відкрити фото: чорно-біле — сцена">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-11-bw-performance.webp" data-caption="Чорно-біле — сцена" aria-label="Відкрити фото: чорно-біле — сцена">
           <img class="gallery__cover" src="assets/gallery/gallery-11-bw-performance.webp" alt="Чорно-білий кадр виступу Анни Трінчер на сцені" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
-        <button type="button" class="gallery__tile" role="listitem" data-image="assets/gallery/gallery-12-bw-artistic.webp" data-caption="Силует" aria-label="Відкрити фото: силует">
+        <button type="button" class="gallery__tile" data-cursor-label="Відкрити" role="listitem" data-image="assets/gallery/gallery-12-bw-artistic.webp" data-caption="Силует" aria-label="Відкрити фото: силует">
           <img class="gallery__cover" src="assets/gallery/gallery-12-bw-artistic.webp" alt="Артистичний чорно-білий силует Анни Трінчер на сцені" loading="lazy" width="900" height="1200">
+          <span class="gallery__spotlight" aria-hidden="true"></span>
         </button>
       </div>
     </div>
@@ -960,6 +982,18 @@
 
 <!-- ===== БЛОК: TOAST ===== -->
 <div class="toast" id="toast" aria-live="polite"></div>
+
+<!-- ===== БЛОК: CUSTOM CURSOR + CURSOR LABEL =====
+     Десктоп-only (pointer:fine, hover:hover, без prefers-reduced-motion) —
+     script.js додає клас has-cursor-ghost на <body> лише тоді, коли обидві
+     умови виконані (той самий supportsFineHover-гейт, що й magnetic
+     buttons/tilt), тому на touch-пристроях .cursor-ghost лишається
+     непереміщеним/невидимим і не заважає нативному скролу/тапам. Текстовий
+     лейбл ("Слухати"/"Дивитися"/"Відкрити") читається з data-cursor-label
+     найближчого елемента під курсором (delegated mousemove). -->
+<div class="cursor-ghost" id="cursorGhost" aria-hidden="true">
+  <span class="cursor-ghost__label" id="cursorGhostLabel"></span>
+</div>
 
 <script src="script.js"></script>
 </body>

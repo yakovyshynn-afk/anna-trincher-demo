@@ -352,6 +352,34 @@
       if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) closeMenu();
     });
 
+    /* Реальний баг, знайдений верифікацією фінального раунду полірування
+       (headless Chrome/CDP, справжні Tab-натискання, не лише статичний
+       аналіз коду): фокус-трапу не було зовсім — Tab з останнього
+       елемента меню ("Придбати квитки") виходив за межі full-screen
+       оверлею на приховані під ним елементи hero (кнопки "Слухати"/
+       "Концерти" тощо), хоча самі вони візуально невидимі під
+       непрозорим фоном .mobile-menu (z-index 70). Клавіатурний
+       користувач міг "загубитись" поза меню, не бачачи, де фокус.
+       Фікс: стандартний cycle-трап — Tab на останньому фокусованому
+       елементі повертає на перший, Shift+Tab на першому — на останній,
+       поки меню відкрите. Список фокусованих елементів рахується
+       заново при кожному Tab (не кешується), бо meню не змінює свій
+       DOM після відкриття — дешево й завжди точно. */
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab" || !mobileMenu.classList.contains("is-open")) return;
+      var focusable = mobileMenu.querySelectorAll("a, button");
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
     /* Баг-фікс QA: якщо мобільне меню лишається відкритим (is-open, з
        document.body.style.overflow = "hidden"), а viewport переходить у
        десктопний брейкпоінт (>=1024px, де .site-header__burger отримує
@@ -828,17 +856,20 @@
     });
   }
 
-  /* ===== БЛОК: TILT + SPOTLIGHT (DiscographyRail + VideoRail) =====
+  /* ===== БЛОК: TILT + SPOTLIGHT (усі 4 rail-секції: Дискографія, Кліпи,
+     Featured-обкладинка, Галерея) =====
      Тільки desktop hover (pointer: fine, hover: hover) і без
      prefers-reduced-motion — мобільний tap лишається статичним, як і решта
      сайту. Рецепт — прямий запит власника (патерн з 21st.dev, tilt +
      spotlight), портований на vanilla JS. Спершу — лише DiscographyRail;
-     за другим запитом ("максимум вау для Галереї/Дискографії/Кліпів")
-     той самий ефект поширено на VideoRail-картки (.video__card), той
-     самий --x/--y контракт, що й .rail__spotlight/.video__card-spotlight
-     (CSS). */
+     за другим запитом поширено на VideoRail (.video__card); фінальний
+     раунд полірування додав featured "Маргарита" (.featured__card) і
+     GalleryRail (.gallery__tile) — тепер консистентно на ВСІХ 4
+     горизонтальних rail-картках/картках сайту, той самий --x/--y контракт,
+     що й .rail__spotlight/.video__card-spotlight/.featured__spotlight/
+     .gallery__spotlight (CSS). */
   if (supportsFineHover && !reduceMotion) {
-    var tiltCards = document.querySelectorAll(".rail__card, .video__card");
+    var tiltCards = document.querySelectorAll(".rail__card, .video__card, .featured__card, .gallery__tile");
     tiltCards.forEach(function (card) {
       function onMove(e) {
         var rect = card.getBoundingClientRect();
@@ -875,4 +906,92 @@
     window.addEventListener("resize", updateFade);
     updateFade();
   });
+
+  /* ===== БЛОК: SCROLL PROGRESS =====
+     Тонка лінія вгорі viewport (index.html #scrollProgressBar), заповнюється
+     0→100% по мірі скролу всієї сторінки. Лише transform:scaleX (GPU-дешево,
+     без анімації width/top). rAF-throttling — оновлення значення відбувається
+     не частіше одного разу за кадр незалежно від частоти scroll-подій.
+     Працює завжди (не reduceMotion-гейт): це індикатор позиції, не
+     декоративний рух — сам transform не анімований (без CSS transition),
+     миттєво відображає реальний scrollTop, тому prefers-reduced-motion не
+     застосовний (немає continuous автономної анімації, лише прямий
+     відгук на дію користувача). */
+  var scrollProgressBar = document.getElementById("scrollProgressBar");
+  if (scrollProgressBar) {
+    var progressTicking = false;
+    function renderScrollProgress() {
+      var doc = document.documentElement;
+      var scrollable = doc.scrollHeight - doc.clientHeight;
+      var ratio = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+      scrollProgressBar.style.transform = "scaleX(" + ratio.toFixed(4) + ")";
+      progressTicking = false;
+    }
+    function onScrollProgress() {
+      if (!progressTicking) {
+        progressTicking = true;
+        requestAnimationFrame(renderScrollProgress);
+      }
+    }
+    window.addEventListener("scroll", onScrollProgress, { passive: true });
+    window.addEventListener("resize", onScrollProgress);
+    renderScrollProgress();
+  }
+
+  /* ===== БЛОК: CUSTOM CURSOR + CURSOR LABEL =====
+     Десктоп-only (той самий supportsFineHover-гейт, що й magnetic
+     buttons/tilt, плюс !reduceMotion — курсор-компаньйон є декоративним
+     рухом, що постійно стежить за мишею, тому вимикається за
+     prefers-reduced-motion так само, як canvas-starfield/orbit).
+     Маленька крапка замість системної стрілки (body.has-cursor-ghost →
+     cursor:none лише на елементах, коли клас доданий — на touch клас
+     ніколи не додається, тому там курсор завжди лишається нативним/
+     відсутнім, як і очікується). Наведення на будь-який елемент з
+     data-cursor-label (обкладинки треків, featured-обкладинка, кліпи,
+     галерея — розставлено в index.html) розширює крапку в овальний чіп із
+     текстовим лейблом ("Слухати"/"Дивитися"/"Відкрити", brief-manus.md
+     §9.2 мікровзаємодія №3). rAF-throttled transform: translate3d —
+     GPU-дешево, немає layout-thrashing навіть при швидкому русі миші. */
+  var cursorGhost = document.getElementById("cursorGhost");
+  var cursorGhostLabel = document.getElementById("cursorGhostLabel");
+  if (supportsFineHover && !reduceMotion && cursorGhost && cursorGhostLabel) {
+    document.body.classList.add("has-cursor-ghost");
+    var ghostX = 0;
+    var ghostY = 0;
+    var ghostTicking = false;
+    function renderGhost() {
+      cursorGhost.style.transform = "translate3d(" + ghostX + "px, " + ghostY + "px, 0)";
+      ghostTicking = false;
+    }
+    document.addEventListener(
+      "mousemove",
+      function (e) {
+        ghostX = e.clientX;
+        ghostY = e.clientY;
+        cursorGhost.classList.add("is-active");
+        if (!ghostTicking) {
+          ghostTicking = true;
+          requestAnimationFrame(renderGhost);
+        }
+        var mediaEl = e.target && e.target.closest ? e.target.closest("[data-cursor-label]") : null;
+        if (mediaEl) {
+          cursorGhost.classList.add("is-media");
+          cursorGhostLabel.textContent = mediaEl.getAttribute("data-cursor-label") || "";
+        } else {
+          cursorGhost.classList.remove("is-media");
+          cursorGhostLabel.textContent = "";
+        }
+      },
+      { passive: true }
+    );
+    document.addEventListener("mouseleave", function () {
+      cursorGhost.classList.remove("is-active", "is-media");
+    });
+    document.addEventListener("mousedown", function () {
+      cursorGhost.classList.add("is-pressed");
+    });
+    document.addEventListener("mouseup", function () {
+      cursorGhost.classList.remove("is-pressed");
+    });
+  }
 })();
